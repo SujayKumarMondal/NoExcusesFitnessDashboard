@@ -1,0 +1,115 @@
+<!-- Include in your <head> -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Footer -->
+  <footer class="main-footer text-white py-0 px-3 small" style="background: linear-gradient(to right top, #0b3574, #033f91, #004aae, #0054cc, #125eeb);">
+    <div class="container-fluid d-flex flex-column flex-md-row justify-content-between align-items-center flex-wrap">
+  
+      <!-- Left: Email and WhatsApp -->
+      <div class="d-flex flex-column gap-2 my-1">
+        <div class="me-md-4 fade-in delay-1">
+          Email: <a href="mailto:hiiiamsujay12@gmail.com" class="text-warning contact-link">hiiiamsujay12@gmail.com</a>
+        </div>
+        <div class="fade-in delay-2">
+          WhatsApp: <a href="https://wa.me/918617228703" target="_blank" class="text-warning contact-link">+91 86172 28703</a>
+        </div>
+      </div>
+  
+      <!-- Right: Clock + Social Icons -->
+      <div class="d-flex align-items-center mb-1 gap-3">
+        <!-- Digital Clock -->
+        <div id="live-clock" class="text-white small font-monospace" title="Current Time"></div>
+  
+        <!-- Social Icons -->
+        <div>
+          <a href="https://www.linkedin.com/in/sujaykumarmondal" target="_blank" class="text-white social-icon" title="LinkedIn">
+            <i class="fab fa-linkedin fa-lg"></i>
+          </a>
+          <a href="https://www.facebook.com/your_facebook_username" target="_blank" class="text-white social-icon" title="Facebook">
+            <i class="fab fa-facebook fa-lg"></i>
+          </a>
+          <a href="https://www.youtube.com/@your_youtube_channel" target="_blank" class="text-white social-icon" title="YouTube">
+            <i class="fab fa-youtube fa-lg"></i>
+          </a>
+        </div>
+      </div>
+  
+      <!-- Bottom: Copyright -->
+      <div class="w-100 text-center mt-2 fade-in copyright-text">
+        &copy; {% now "Y" %} <strong>Online NoExcusesFitness Dashboard</strong>. All rights reserved.
+      </div>
+  
+    </div>
+  </footer>
+  
+  <!-- Add to your CSS (or within <style> tag) -->
+  <style>
+    /* Contact link hover effect */
+    .contact-link:hover {
+      text-decoration: underline;
+      color: #ffd700 !important;
+      transition: all 0.3s ease-in-out;
+    }
+  
+    .copyright-text {
+      font-size: 0.85rem;
+    }
+  
+    /* Social icons */
+    .social-icon {
+      margin: 0 6px;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+  
+    .social-icon:hover {
+      transform: scale(1.2);
+      color: #ffd700 !important;
+    }
+  
+    /* Fade-in animations */
+    .fade-in {
+      opacity: 0;
+      animation: fadeInUp 0.8s forwards;
+    }
+  
+    .delay-1 {
+      animation-delay: 0.2s;
+    }
+  
+    .delay-2 {
+      animation-delay: 0.4s;
+    }
+  
+    @keyframes fadeInUp {
+      from {
+        transform: translateY(10px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  
+    /* Clock styling */
+    #live-clock {
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 2px 8px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+    }
+  </style>
+  
+  <!-- JavaScript for Live Clock -->
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-IN', { hour12: true });
+      document.getElementById('live-clock').textContent = timeString;
+    }
+  
+    setInterval(updateClock, 1000);
+    updateClock(); // Initial call
+  </script>
+  

@@ -1,0 +1,288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>NoExcusesFitness | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- favicon -->
+  <link rel="shortcut icon" href="{% static '/image/favicon1.ico' %}">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+  <style>
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: url('{% static "dist/img/background.jpg" %}') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    .login-wrapper {
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .login-box {
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 40px;
+      border-radius: 12px;
+      border: 2px solid #ffc107;
+      width: 400px;
+      box-shadow: 0 0 20px #000;
+    }
+
+    .login-title {
+      font-weight: 800;
+      color: #ffc107;
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+    }
+
+    .tagline {
+      font-size: 0.9rem;
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 25px;
+    }
+
+    .form-control:focus {
+      border-color: #ffc107;
+      box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    .btn-login {
+      background-color: #ffc107;
+      border: none;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .btn-login:hover {
+      background-color: #e0aa00;
+      color: #000;
+    }
+
+    a.text-warning:hover {
+      text-decoration: underline;
+    }
+
+    #clock-calendar-container {
+      position: fixed;
+      bottom: 10px;
+      right: 20px;
+      text-align: right;
+      color: #fff;
+      z-index: 1000;
+    }
+
+    #live-clock {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    #calendar-popup {
+      background-color: #fff;
+      color: #000;
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    #widget-container {
+      position: fixed;
+      bottom: 10px;
+      left: 20px;
+      color: #fff;
+      z-index: 1000;
+      font-size: 0.85rem;
+    }
+
+    .quote-box {
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+
+    .progress {
+      height: 6px;
+      background-color: #444;
+    }
+
+    .progress-bar {
+      background-color: #ffc107;
+    }
+
+    .login-error {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Clock and Calendar -->
+  <div id="clock-calendar-container">
+    <div id="live-clock"></div>
+    <div style="margin-top: 5px;">
+      <button id="date-btn" class="btn btn-sm btn-warning">
+        <span id="current-date"></span>
+      </button>
+      <input type="date" id="calendar-popup" style="position: absolute; top: 100%; right: 0; display: none;" />
+    </div>
+  </div>
+
+  <!-- Extra Widgets -->
+  <div id="widget-container">
+    <div class="quote-box" id="quote-box"></div>
+    {% comment %} <strong>Day Progress</strong> {% endcomment %}
+    {% comment %} <div class="progress mt-1">
+      <div id="day-progress" class="progress-bar" style="width: 0%;"></div>
+    </div> {% endcomment %}
+  </div>
+
+  <!-- Login Section -->
+  <div class="login-wrapper">
+    <div class="login-box">
+
+      <div class="login-title">NoExcusesFitness</div>
+      <div class="tagline">Unleash Your Power!</div>
+
+      {% if messages %}
+        {% for message in messages %}
+          {% if message.tags == 'error' %}
+            <div class="alert alert-danger text-center login-error">
+              {{ message }}
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      <form action="doLogin/" method="post">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+          <input required type="email" name="email" class="form-control" placeholder="Email">
+          <div class="input-group-append">
+            <div class="input-group-text bg-dark text-white">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input required type="password" name="password" class="form-control" placeholder="Password">
+          <div class="input-group-append">
+            <div class="input-group-text bg-dark text-white">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <div class="g-recaptcha" data-sitekey="6LfTGD4qAAAAAJLKy1TGJY7uuTh_T1cB5VikRWjF"></div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+            <div class="icheck-primary">
+              <input type="checkbox" id="remember">
+              <label for="remember">Remember Me</label>
+            </div>
+          </div>
+          <div class="col-4">
+            <button type="submit" class="btn btn-login btn-block">Log In</button>
+          </div>
+        </div>
+      </form>
+
+      <p class="mb-1 mt-2 text-center">
+        <a href="{% url 'password_reset' %}" class="text-warning">Forgot Password?</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+
+  <script>
+    // Clock
+    function updateISTClock() {
+      const now = new Date();
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      const istOffset = 5.5 * 60 * 60 * 1000;
+      const istTime = new Date(utc + istOffset);
+      const timeString = istTime.toLocaleTimeString('en-IN', { hour12: false }) + ' IST';
+      document.getElementById('live-clock').innerText = timeString;
+    }
+    setInterval(updateISTClock, 1000);
+    updateISTClock();
+
+    // Date Button
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('current-date').innerText = today;
+    document.getElementById('calendar-popup').value = today;
+
+    document.getElementById('date-btn').addEventListener('click', function () {
+      const popup = document.getElementById('calendar-popup');
+      popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.getElementById('calendar-popup').addEventListener('change', function () {
+      document.getElementById('current-date').innerText = this.value;
+      this.style.display = 'none';
+    });
+
+    // Quote of the Day
+    const quotes = [
+      "The body achieves what the mind believes.",
+      "Success starts with self-discipline.",
+      "Your only limit is you.",
+      "It never gets easier, you just get stronger.",
+      "Don’t stop when you’re tired, stop when you’re done.",
+      "Excuses don’t burn calories.",
+      "You don’t get the ass you want by sitting on it.",
+      "Results happen over time, not overnight.",
+      "Strong is the new sexy.",
+      "Fall in love with taking care of your body.",
+      "A one-hour workout is 4% of your day. No excuses.",
+      "Do something today that your future self will thank you for.",
+      "Train hard or go home.",
+      "Pain is temporary, pride is forever.",
+      "Don’t wish for it. Work for it.",
+      "The only bad workout is the one you didn’t do.",
+      "When you feel like quitting, think about why you started.",
+      "Be stronger than your excuses.",
+      "Sore today, strong tomorrow.",
+      "If it doesn’t challenge you, it won’t change you.",
+      "Fitness is not about being better than someone else… it’s about being better than you used to be.",
+      "Make your body the sexiest outfit you own.",
+      "Wake up. Work out. Kick ass. Repeat.",
+      "Work hard in silence, let your success be your noise.",
+      "A fit body is a healthy body, and a healthy body is a happy life."
+    ];
+    document.getElementById('quote-box').innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+    // Day Progress
+    function updateDayProgress() {
+      const now = new Date();
+      const percent = ((now.getHours() * 60 + now.getMinutes()) / 1440) * 100;
+      document.getElementById('day-progress').style.width = `${percent}%`;
+    }
+    setInterval(updateDayProgress, 60000);
+    updateDayProgress();
+  </script>
+</body>
+
+</html>
