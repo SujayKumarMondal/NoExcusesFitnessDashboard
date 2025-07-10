@@ -13,82 +13,82 @@ from django.views.generic import UpdateView
 from .forms import *
 from .models import *
 
-
+# For Admins
 def admin_home(request):
-    total_staff = Staff.objects.all().count()
-    total_students = Student.objects.all().count()
-    subjects = Subject.objects.all()
-    total_subject = subjects.count()
-    total_course = Course.objects.all().count()
-    attendance_list = Attendance.objects.filter(subject__in=subjects)
+    total_trainer = Trainer.objects.all().count()
+    total_members = Member.objects.all().count()
+    work_out_plans = WorkoutPlanExercise.objects.all()
+    total_work_out_plan = work_out_plans.count()
+    total_work_out = WorkoutPlan.objects.all().count()
+    attendance_list = Attendance.objects.filter(work_out_plan__in=work_out_plans)
     total_attendance = attendance_list.count()
     attendance_list = []
-    subject_list = []
-    for subject in subjects:
-        attendance_count = Attendance.objects.filter(subject=subject).count()
-        subject_list.append(subject.name[:7])
+    work_out_plan_list = []
+    for wop in work_out_plans:
+        attendance_count = Attendance.objects.filter(wop=wop).count()
+        work_out_plan_list.append(WorkoutPlanExercise.name[:7])
         attendance_list.append(attendance_count)
 
-    # Total Subjects and students in Each Course
-    course_all = Course.objects.all()
-    course_name_list = []
-    subject_count_list = []
-    student_count_list_in_course = []
+    # Total Subjects and members in Each Course
+    work_out_all = WorkoutPlan.objects.all()
+    work_out_name_list = []
+    work_out_plan_count_list = []
+    member_count_list_in_wo = []
 
-    for course in course_all:
-        subjects = Subject.objects.filter(course_id=course.id).count()
-        students = Student.objects.filter(course_id=course.id).count()
-        course_name_list.append(course.name)
-        subject_count_list.append(subjects)
-        student_count_list_in_course.append(students)
+    for woa in work_out_all:
+        work_out_plans = WorkoutPlanExercise.objects.filter(course_id=woa.id).count()
+        members = Member.objects.filter(course_id=woa.id).count()
+        work_out_name_list.append(woa.work_out)
+        work_out_plan_count_list.append(work_out_plans)
+        member_count_list_in_wo.append(members)
     
-    subject_all = Subject.objects.all()
-    subject_list = []
-    student_count_list_in_subject = []
-    for subject in subject_all:
-        course = Course.objects.get(id=subject.course.id)
-        student_count = Student.objects.filter(course_id=course.id).count()
-        subject_list.append(subject.name)
-        student_count_list_in_subject.append(student_count)
+    work_out_plan_all = WorkoutPlanExercise.objects.all()
+    work_out_plan_list = []
+    member_count_list_in_wop = []
+    for wopa in work_out_plan_all:
+        wop = WorkoutPlan.objects.get(id=wopa.plan.id)
+        member_count = Member.objects.filter(course_id=wopa.id).count()
+        work_out_plan_list.append(wopa.name)
+        member_count_list_in_wop.append(member_count)
 
 
-    # For Students
-    student_attendance_present_list=[]
-    student_attendance_leave_list=[]
-    student_name_list=[]
+    # For Members
+    member_attendance_present_list=[]
+    member_attendance_leave_list=[]
+    member_name_list=[]
 
-    students = Student.objects.all()
-    for student in students:
+    members = Member.objects.all()
+    for mem in members:
         
-        attendance = AttendanceReport.objects.filter(student_id=student.id, status=True).count()
-        absent = AttendanceReport.objects.filter(student_id=student.id, status=False).count()
-        leave = LeaveReportStudent.objects.filter(student_id=student.id, status=1).count()
-        student_attendance_present_list.append(attendance)
-        student_attendance_leave_list.append(leave+absent)
-        student_name_list.append(student.admin.first_name)
+        attendance = AttendanceReport.objects.filter(member_id=mem.id, status=True).count()
+        absent = AttendanceReport.objects.filter(member_id=mem.id, status=False).count()
+        leave = LeaveReportMember.objects.filter(member_id=mem.id, status=1).count()
+        member_attendance_present_list.append(attendance)
+        member_attendance_leave_list.append(leave+absent)
+        member_name_list.append(Member.member.first_name)
 
     context = {
         'page_title': "NoExcusesFitness(Administrative Dashboard)",
-        'total_students': total_students,
-        'total_staff': total_staff,
-        'total_course': total_course,
-        'total_subject': total_subject,
-        'subject_list': subject_list,
+        'total_members': total_members,
+        'total_trainers': total_trainer,
+        'total_work_out': total_work_out,
+        'total_work_out_plan': total_work_out_plan,
+        'work_out_plan_list': work_out_plan_list,
         'attendance_list': attendance_list,
-        'student_attendance_present_list': student_attendance_present_list,
-        'student_attendance_leave_list': student_attendance_leave_list,
-        "student_name_list": student_name_list,
-        "student_count_list_in_subject": student_count_list_in_subject,
-        "student_count_list_in_course": student_count_list_in_course,
-        "course_name_list": course_name_list,
+        'member_attendance_present_list': member_attendance_present_list,
+        'member_attendance_leave_list': member_attendance_leave_list,
+        "member_name_list": member_name_list,
+        "member_count_list_in_subject": member_count_list_in_wop,
+        "member_count_list_in_course": member_count_list_in_wo,
+        "work_out_plan_name_list": work_out_name_list,
 
     }
-    return render(request, 'hod_template/home_content.html', context)
+    return render(request, 'admin_template/home_content.html', context)
 
 
-def add_staff(request):
-    form = StaffForm(request.POST or None, request.FILES or None)
-    context = {'form': form, 'page_title': 'Add Staff'}
+def add_trainer(request):
+    form = TrainerForm(request.POST or None, request.FILES or None)
+    context = {'form': form, 'page_title': 'Add Trainer'}
     if request.method == 'POST':
         if form.is_valid():
             first_name = form.cleaned_data.get('first_name')
@@ -97,7 +97,7 @@ def add_staff(request):
             email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
             password = form.cleaned_data.get('password')
-            course = form.cleaned_data.get('course')
+            work_out = form.cleaned_data.get('work_out')
             passport = request.FILES.get('profile_pic')
             fs = FileSystemStorage()
             filename = fs.save(passport.name, passport)
@@ -107,32 +107,32 @@ def add_staff(request):
                     email=email, password=password, user_type=2, first_name=first_name, last_name=last_name, profile_pic=passport_url)
                 user.gender = gender
                 user.address = address
-                user.staff.course = course
+                user.trainer.work_out = work_out
                 user.save()
-                messages.success(request, "Successfully Added")
-                return redirect(reverse('add_staff'))
+                messages.success(request, "Successfully Added Trainer")
+                return redirect(reverse('add_trainer'))
 
             except Exception as e:
                 messages.error(request, "Could Not Add " + str(e))
         else:
             messages.error(request, "Please fulfil all requirements")
 
-    return render(request, 'hod_template/add_staff_template.html', context)
+    return render(request, 'admin_template/add_trainer_template.html', context)
 
 
-def add_student(request):
-    student_form = StudentForm(request.POST or None, request.FILES or None)
-    context = {'form': student_form, 'page_title': 'Add Student'}
+def add_member(request):
+    member_form = MemberForm(request.POST or None, request.FILES or None)
+    context = {'form': member_form, 'page_title': 'Add Member'}
     if request.method == 'POST':
-        if student_form.is_valid():
-            first_name = student_form.cleaned_data.get('first_name')
-            last_name = student_form.cleaned_data.get('last_name')
-            address = student_form.cleaned_data.get('address')
-            email = student_form.cleaned_data.get('email')
-            gender = student_form.cleaned_data.get('gender')
-            password = student_form.cleaned_data.get('password')
-            course = student_form.cleaned_data.get('course')
-            session = student_form.cleaned_data.get('session')
+        if member_form.is_valid():
+            first_name = member_form.cleaned_data.get('first_name')
+            last_name = member_form.cleaned_data.get('last_name')
+            address = member_form.cleaned_data.get('address')
+            email = member_form.cleaned_data.get('email')
+            gender = member_form.cleaned_data.get('gender')
+            password = member_form.cleaned_data.get('password')
+            work_out = member_form.cleaned_data.get('work_out')
+            session = member_form.cleaned_data.get('session')
             passport = request.FILES['profile_pic']
             fs = FileSystemStorage()
             filename = fs.save(passport.name, passport)
@@ -142,111 +142,111 @@ def add_student(request):
                     email=email, password=password, user_type=3, first_name=first_name, last_name=last_name, profile_pic=passport_url)
                 user.gender = gender
                 user.address = address
-                user.student.session = session
-                user.student.course = course
+                user.member.session = session
+                user.member.work_out = work_out
                 user.save()
-                messages.success(request, "Successfully Added")
-                return redirect(reverse('add_student'))
+                messages.success(request, "Successfully Added Member")
+                return redirect(reverse('add_member'))
             except Exception as e:
                 messages.error(request, "Could Not Add: " + str(e))
         else:
             messages.error(request, "Could Not Add: ")
-    return render(request, 'hod_template/add_student_template.html', context)
+    return render(request, 'admin_template/add_member_template.html', context)
 
 
-def add_course(request):
-    form = CourseForm(request.POST or None)
+def add_work_out_plan(request):
+    form = WorkoutPlanForm(request.POST or None)
     context = {
         'form': form,
-        'page_title': 'Add Course'
+        'page_title': 'Add Work Out Plan'
     }
     if request.method == 'POST':
         if form.is_valid():
-            name = form.cleaned_data.get('name')
+            work_out = form.cleaned_data.get('work_out')
             try:
-                course = Course()
-                course.name = name
-                course.save()
-                messages.success(request, "Successfully Added")
-                return redirect(reverse('add_course'))
+                wop = WorkoutPlan()
+                wop.work_out = work_out
+                wop.save()
+                messages.success(request, "Successfully Added Work Out Plan")
+                return redirect(reverse('add_work_out_plan'))
             except:
                 messages.error(request, "Could Not Add")
         else:
             messages.error(request, "Could Not Add")
-    return render(request, 'hod_template/add_course_template.html', context)
+    return render(request, 'admin_template/add_workout_plan_template.html', context)
 
 
-def add_subject(request):
-    form = SubjectForm(request.POST or None)
+def add_work_out_plan_exercise(request):
+    form = WorkoutPlanExerciseForm(request.POST or None)
     context = {
         'form': form,
-        'page_title': 'Add Subject'
+        'page_title': 'Add Work Out Plan Exercise'
     }
     if request.method == 'POST':
         if form.is_valid():
             name = form.cleaned_data.get('name')
-            course = form.cleaned_data.get('course')
-            staff = form.cleaned_data.get('staff')
+            plan = form.cleaned_data.get('plan')
+            trainer = form.cleaned_data.get('trainer')
             try:
-                subject = Subject()
-                subject.name = name
-                subject.staff = staff
-                subject.course = course
-                subject.save()
-                messages.success(request, "Successfully Added")
-                return redirect(reverse('add_subject'))
+                work_out_plan = WorkoutPlanExercise()
+                work_out_plan.name = name
+                work_out_plan.trainer = trainer
+                work_out_plan.plan = plan
+                work_out_plan.save()
+                messages.success(request, "Successfully Added Work Out Plan Exercise")
+                return redirect(reverse('add_work_out_plan_exercise'))
 
             except Exception as e:
                 messages.error(request, "Could Not Add " + str(e))
         else:
             messages.error(request, "Fill Form Properly")
 
-    return render(request, 'hod_template/add_subject_template.html', context)
+    return render(request, 'admin_template/add_workout_plan_exercise_template.html', context)
 
 
-def manage_staff(request):
-    allStaff = CustomUser.objects.filter(user_type=2)
+def manage_trainer(request):
+    allTrainer = CustomUser.objects.filter(user_type=2)
     context = {
-        'allStaff': allStaff,
-        'page_title': 'Manage Staff'
+        'allTrainer': allTrainer,
+        'page_title': 'Manage Trainer'
     }
-    return render(request, "hod_template/manage_staff.html", context)
+    return render(request, "admin_template/manage_trainer.html", context)
 
 
-def manage_student(request):
-    students = CustomUser.objects.filter(user_type=3)
+def manage_member(request):
+    members = CustomUser.objects.filter(user_type=3)
     context = {
-        'students': students,
-        'page_title': 'Manage Students'
+        'members': members,
+        'page_title': 'Manage Members'
     }
-    return render(request, "hod_template/manage_student.html", context)
+    return render(request, "admin_template/manage_member.html", context)
 
 
-def manage_course(request):
-    courses = Course.objects.all()
+def manage_work_out_plan(request):
+    mwop = WorkoutPlan.objects.all()
     context = {
-        'courses': courses,
-        'page_title': 'Manage Courses'
+        'work_out_plan': mwop,
+        'page_title': 'Manage Work Out Plan'
     }
-    return render(request, "hod_template/manage_course.html", context)
+    return render(request, "admin_template/manage_work_out_plan.html", context)
 
 
-def manage_subject(request):
-    subjects = Subject.objects.all()
+def manage_work_out_plan_exercise(request):
+    mwope = WorkoutPlanExercise.objects.all()
     context = {
-        'subjects': subjects,
-        'page_title': 'Manage Subjects'
+        'work_out_plan_exercise': mwope,
+        'page_title': 'Manage Work Out Plan Exercise'
     }
-    return render(request, "hod_template/manage_subject.html", context)
+    return render(request, "admin_template/manage_work_out_plan_exercise.html", context)
 
 
-def edit_staff(request, staff_id):
-    staff = get_object_or_404(Staff, id=staff_id)
-    form = StaffForm(request.POST or None, instance=staff)
+def edit_trainer(request, trainer_id):
+    trainer = get_object_or_404(Trainer, id=trainer_id)
+    form = TrainerForm(request.POST or None, instance=trainer)
     context = {
         'form': form,
-        'staff_id': staff_id,
-        'page_title': 'Edit Staff'
+        'trainer_id': trainer_id,
+        'page_title': 'Edit Trainer'
     }
     if request.method == 'POST':
         if form.is_valid():
@@ -257,10 +257,10 @@ def edit_staff(request, staff_id):
             email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
             password = form.cleaned_data.get('password') or None
-            course = form.cleaned_data.get('course')
+            work_out = form.cleaned_data.get('work_out')
             passport = request.FILES.get('profile_pic') or None
             try:
-                user = CustomUser.objects.get(id=staff.admin.id)
+                user = CustomUser.objects.get(id=Trainer.trainer.id)
                 user.username = username
                 user.email = email
                 if password != None:
@@ -274,28 +274,28 @@ def edit_staff(request, staff_id):
                 user.last_name = last_name
                 user.gender = gender
                 user.address = address
-                staff.course = course
+                trainer.work_out = work_out
                 user.save()
-                staff.save()
+                trainer.save()
                 messages.success(request, "Successfully Updated")
-                return redirect(reverse('edit_staff', args=[staff_id]))
+                return redirect(reverse('edit_trainer', args=[trainer_id]))
             except Exception as e:
                 messages.error(request, "Could Not Update " + str(e))
         else:
             messages.error(request, "Please fil form properly")
     else:
-        user = CustomUser.objects.get(id=staff_id)
-        staff = Staff.objects.get(id=user.id)
-        return render(request, "hod_template/edit_staff_template.html", context)
+        user = CustomUser.objects.get(id=trainer_id)
+        trainer = Trainer.objects.get(id=user.id)
+        return render(request, "admin_template/edit_trainer_template.html", context)
 
 
-def edit_student(request, student_id):
-    student = get_object_or_404(Student, id=student_id)
-    form = StudentForm(request.POST or None, instance=student)
+def edit_member(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+    form = MemberForm(request.POST or None, instance=member)
     context = {
         'form': form,
-        'student_id': student_id,
-        'page_title': 'Edit Student'
+        'member_id': member_id,
+        'page_title': 'Edit Member'
     }
     if request.method == 'POST':
         if form.is_valid():
@@ -306,11 +306,11 @@ def edit_student(request, student_id):
             email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
             password = form.cleaned_data.get('password') or None
-            course = form.cleaned_data.get('course')
+            work_out = form.cleaned_data.get('work_out')
             session = form.cleaned_data.get('session')
             passport = request.FILES.get('profile_pic') or None
             try:
-                user = CustomUser.objects.get(id=student.admin.id)
+                user = CustomUser.objects.get(id=Member.member.id)
                 if passport != None:
                     fs = FileSystemStorage()
                     filename = fs.save(passport.name, passport)
@@ -322,72 +322,74 @@ def edit_student(request, student_id):
                     user.set_password(password)
                 user.first_name = first_name
                 user.last_name = last_name
-                student.session = session
+                member.session = session
                 user.gender = gender
                 user.address = address
-                student.course = course
+                member.work_out = work_out
                 user.save()
-                student.save()
+                member.save()
                 messages.success(request, "Successfully Updated")
-                return redirect(reverse('edit_student', args=[student_id]))
+                return redirect(reverse('edit_member', args=[member_id]))
             except Exception as e:
                 messages.error(request, "Could Not Update " + str(e))
         else:
             messages.error(request, "Please Fill Form Properly!")
     else:
-        return render(request, "hod_template/edit_student_template.html", context)
+        user = CustomUser.objects.get(id=member_id)
+        member = Member.objects.get(id=user.id)
+        return render(request, "admin_template/edit_member_template.html", context)
 
 
-def edit_course(request, course_id):
-    instance = get_object_or_404(Course, id=course_id)
-    form = CourseForm(request.POST or None, instance=instance)
+def edit_work_out_plan(request, plan_id):
+    instance = get_object_or_404(WorkoutPlan, id=plan_id)
+    form = WorkoutPlanForm(request.POST or None, instance=instance)
     context = {
         'form': form,
-        'course_id': course_id,
-        'page_title': 'Edit Course'
+        'plan_id': plan_id,
+        'page_title': 'Edit Work Out Plan'
     }
     if request.method == 'POST':
         if form.is_valid():
-            name = form.cleaned_data.get('name')
+            work_out = form.cleaned_data.get('work_out')
             try:
-                course = Course.objects.get(id=course_id)
-                course.name = name
-                course.save()
+                wop = WorkoutPlan.objects.get(id=plan_id)
+                wop.work_out = work_out
+                wop.save()
                 messages.success(request, "Successfully Updated")
             except:
                 messages.error(request, "Could Not Update")
         else:
             messages.error(request, "Could Not Update")
 
-    return render(request, 'hod_template/edit_course_template.html', context)
+    return render(request, 'admin_template/edit_course_template.html', context)
 
 
-def edit_subject(request, subject_id):
-    instance = get_object_or_404(Subject, id=subject_id)
-    form = SubjectForm(request.POST or None, instance=instance)
+def edit_work_out_plan_exercise(request, exercise_id):
+    instance = get_object_or_404(WorkoutPlanExercise, id=exercise_id)
+    form = WorkoutPlanExerciseForm(request.POST or None, instance=instance)
     context = {
         'form': form,
-        'subject_id': subject_id,
-        'page_title': 'Edit Subject'
+        'exercise_id': exercise_id,
+        'page_title': 'Edit Work Out Plan Exercise'
     }
     if request.method == 'POST':
         if form.is_valid():
             name = form.cleaned_data.get('name')
-            course = form.cleaned_data.get('course')
-            staff = form.cleaned_data.get('staff')
+            plan = form.cleaned_data.get('plan')
+            trainer = form.cleaned_data.get('trainer')
             try:
-                subject = Subject.objects.get(id=subject_id)
-                subject.name = name
-                subject.staff = staff
-                subject.course = course
-                subject.save()
+                wope = WorkoutPlanExercise.objects.get(id=exercise_id)
+                wope.name = name
+                wope.trainer = trainer
+                wope.plan = plan
+                wope.save()
                 messages.success(request, "Successfully Updated")
-                return redirect(reverse('edit_subject', args=[subject_id]))
+                return redirect(reverse('edit_subject', args=[exercise_id]))
             except Exception as e:
                 messages.error(request, "Could Not Add " + str(e))
         else:
             messages.error(request, "Fill Form Properly")
-    return render(request, 'hod_template/edit_subject_template.html', context)
+    return render(request, 'admin_template/edit_subject_template.html', context)
 
 
 def add_session(request):
@@ -403,13 +405,13 @@ def add_session(request):
                 messages.error(request, 'Could Not Add ' + str(e))
         else:
             messages.error(request, 'Fill Form Properly ')
-    return render(request, "hod_template/add_session_template.html", context)
+    return render(request, "admin_template/add_session_template.html", context)
 
 
 def manage_session(request):
     sessions = Session.objects.all()
     context = {'sessions': sessions, 'page_title': 'Manage Sessions'}
-    return render(request, "hod_template/manage_session.html", context)
+    return render(request, "admin_template/manage_session.html", context)
 
 
 def edit_session(request, session_id):
@@ -426,13 +428,13 @@ def edit_session(request, session_id):
             except Exception as e:
                 messages.error(
                     request, "Session Could Not Be Updated " + str(e))
-                return render(request, "hod_template/edit_session_template.html", context)
+                return render(request, "admin_template/edit_session_template.html", context)
         else:
             messages.error(request, "Invalid Form Submitted ")
-            return render(request, "hod_template/edit_session_template.html", context)
+            return render(request, "admin_template/edit_session_template.html", context)
 
     else:
-        return render(request, "hod_template/edit_session_template.html", context)
+        return render(request, "admin_template/edit_session_template.html", context)
 
 
 @csrf_exempt
@@ -448,18 +450,18 @@ def check_email_availability(request):
 
 
 @csrf_exempt
-def student_feedback_message(request):
+def member_feedback_message(request):
     if request.method != 'POST':
-        feedbacks = FeedbackStudent.objects.all()
+        feedbacks = FeedbackMember.objects.all()
         context = {
             'feedbacks': feedbacks,
-            'page_title': 'Student Feedback Messages'
+            'page_title': 'Member Feedback Messages'
         }
-        return render(request, 'hod_template/student_feedback_template.html', context)
+        return render(request, 'admin_template/student_feedback_template.html', context)
     else:
         feedback_id = request.POST.get('id')
         try:
-            feedback = get_object_or_404(FeedbackStudent, id=feedback_id)
+            feedback = get_object_or_404(FeedbackMember, id=feedback_id)
             reply = request.POST.get('reply')
             feedback.reply = reply
             feedback.save()
@@ -469,18 +471,18 @@ def student_feedback_message(request):
 
 
 @csrf_exempt
-def staff_feedback_message(request):
+def trainer_feedback_message(request):
     if request.method != 'POST':
-        feedbacks = FeedbackStaff.objects.all()
+        feedbacks = FeedbackTrainer.objects.all()
         context = {
             'feedbacks': feedbacks,
-            'page_title': 'Staff Feedback Messages'
+            'page_title': 'Trainer Feedback Messages'
         }
-        return render(request, 'hod_template/staff_feedback_template.html', context)
+        return render(request, 'admin_template/staff_feedback_template.html', context)
     else:
         feedback_id = request.POST.get('id')
         try:
-            feedback = get_object_or_404(FeedbackStaff, id=feedback_id)
+            feedback = get_object_or_404(FeedbackTrainer, id=feedback_id)
             reply = request.POST.get('reply')
             feedback.reply = reply
             feedback.save()
@@ -490,14 +492,14 @@ def staff_feedback_message(request):
 
 
 @csrf_exempt
-def view_staff_leave(request):
+def view_trainer_leave(request):
     if request.method != 'POST':
-        allLeave = LeaveReportStaff.objects.all()
+        allLeave = LeaveReportTrainer.objects.all()
         context = {
             'allLeave': allLeave,
-            'page_title': 'Leave Applications From Staff'
+            'page_title': 'Leave Applications From Trainer'
         }
-        return render(request, "hod_template/staff_leave_view.html", context)
+        return render(request, "admin_template/staff_leave_view.html", context)
     else:
         id = request.POST.get('id')
         status = request.POST.get('status')
@@ -506,7 +508,7 @@ def view_staff_leave(request):
         else:
             status = -1
         try:
-            leave = get_object_or_404(LeaveReportStaff, id=id)
+            leave = get_object_or_404(LeaveReportTrainer, id=id)
             leave.status = status
             leave.save()
             return HttpResponse(True)
@@ -515,14 +517,14 @@ def view_staff_leave(request):
 
 
 @csrf_exempt
-def view_student_leave(request):
+def view_member_leave(request):
     if request.method != 'POST':
-        allLeave = LeaveReportStudent.objects.all()
+        allLeave = LeaveReportMember.objects.all()
         context = {
             'allLeave': allLeave,
-            'page_title': 'Leave Applications From Students'
+            'page_title': 'Leave Applications From Member'
         }
-        return render(request, "hod_template/student_leave_view.html", context)
+        return render(request, "admin_template/student_leave_view.html", context)
     else:
         id = request.POST.get('id')
         status = request.POST.get('status')
@@ -531,7 +533,7 @@ def view_student_leave(request):
         else:
             status = -1
         try:
-            leave = get_object_or_404(LeaveReportStudent, id=id)
+            leave = get_object_or_404(LeaveReportMember, id=id)
             leave.status = status
             leave.save()
             return HttpResponse(True)
@@ -540,7 +542,7 @@ def view_student_leave(request):
 
 
 def admin_view_attendance(request):
-    subjects = Subject.objects.all()
+    subjects = WorkoutPlanExercise.objects.all()
     sessions = Session.objects.all()
     context = {
         'subjects': subjects,
@@ -548,16 +550,16 @@ def admin_view_attendance(request):
         'page_title': 'View Attendance'
     }
 
-    return render(request, "hod_template/admin_view_attendance.html", context)
+    return render(request, "admin_template/admin_view_attendance.html", context)
 
 
 @csrf_exempt
 def get_admin_attendance(request):
-    subject_id = request.POST.get('subject')
+    plan_id = request.POST.get('work_out_plan')
     session_id = request.POST.get('session')
     attendance_date_id = request.POST.get('attendance_date_id')
     try:
-        subject = get_object_or_404(Subject, id=subject_id)
+        work_out_plan = get_object_or_404(WorkoutPlan, id=plan_id)
         session = get_object_or_404(Session, id=session_id)
         attendance = get_object_or_404(
             Attendance, id=attendance_date_id, session=session)
@@ -567,7 +569,7 @@ def get_admin_attendance(request):
         for report in attendance_reports:
             data = {
                 "status":  str(report.status),
-                "name": str(report.student)
+                "name": str(report.member)
             }
             json_data.append(data)
         return JsonResponse(json.dumps(json_data), safe=False)
@@ -607,48 +609,48 @@ def admin_view_profile(request):
         except Exception as e:
             messages.error(
                 request, "Error Occured While Updating Profile " + str(e))
-    return render(request, "hod_template/admin_view_profile.html", context)
+    return render(request, "admin_template/admin_view_profile.html", context)
 
 
-def admin_notify_staff(request):
-    staff = CustomUser.objects.filter(user_type=2)
+def admin_notify_trainer(request):
+    trainer = CustomUser.objects.filter(user_type=2)
     context = {
-        'page_title': "Send Notifications To Staff",
-        'allStaff': staff
+        'page_title': "Send Notifications To Trainer",
+        'allTrainer': trainer
     }
-    return render(request, "hod_template/staff_notification.html", context)
+    return render(request, "admin_template/staff_notification.html", context)
 
 
-def admin_notify_student(request):
-    student = CustomUser.objects.filter(user_type=3)
+def admin_notify_member(request):
+    member = CustomUser.objects.filter(user_type=3)
     context = {
-        'page_title': "Send Notifications To Students",
-        'students': student
+        'page_title': "Send Notifications To Member",
+        'allMember': member
     }
-    return render(request, "hod_template/student_notification.html", context)
+    return render(request, "admin_template/student_notification.html", context)
 
 
 @csrf_exempt
-def send_student_notification(request):
+def send_member_notification(request):
     id = request.POST.get('id')
     message = request.POST.get('message')
-    student = get_object_or_404(Student, admin_id=id)
+    member = get_object_or_404(Member, admin_id=id)
     try:
         url = "https://fcm.googleapis.com/fcm/send"
         body = {
             'notification': {
-                'title': "Student Management System",
+                'title': "Member Management System",
                 'body': message,
-                'click_action': reverse('student_view_notification'),
+                'click_action': reverse('member_view_notification'),
                 'icon': static('dist/img/AdminLTELogo.png')
             },
-            'to': student.admin.fcm_token
+            'to': Member.member.fcm_token
         }
         headers = {'Authorization':
                    'key=AAAA3Bm8j_M:APA91bElZlOLetwV696SoEtgzpJr2qbxBfxVBfDWFiopBWzfCfzQp2nRyC7_A2mlukZEHV4g1AmyC6P_HonvSkY2YyliKt5tT3fe_1lrKod2Daigzhb2xnYQMxUWjCAIQcUexAMPZePB',
                    'Content-Type': 'application/json'}
         data = requests.post(url, data=json.dumps(body), headers=headers)
-        notification = NotificationStudent(student=student, message=message)
+        notification = NotificationMember(member=member, message=message)
         notification.save()
         return HttpResponse("True")
     except Exception as e:
@@ -656,62 +658,62 @@ def send_student_notification(request):
 
 
 @csrf_exempt
-def send_staff_notification(request):
+def send_trainer_notification(request):
     id = request.POST.get('id')
     message = request.POST.get('message')
-    staff = get_object_or_404(Staff, admin_id=id)
+    trainer = get_object_or_404(Trainer, admin_id=id)
     try:
         url = "https://fcm.googleapis.com/fcm/send"
         body = {
             'notification': {
-                'title': "Student Management System",
+                'title': "Trainer Management System",
                 'body': message,
                 'click_action': reverse('staff_view_notification'),
                 'icon': static('dist/img/AdminLTELogo.png')
             },
-            'to': staff.admin.fcm_token
+            'to': trainer.trainer.fcm_token
         }
         headers = {'Authorization':
                    'key=AAAA3Bm8j_M:APA91bElZlOLetwV696SoEtgzpJr2qbxBfxVBfDWFiopBWzfCfzQp2nRyC7_A2mlukZEHV4g1AmyC6P_HonvSkY2YyliKt5tT3fe_1lrKod2Daigzhb2xnYQMxUWjCAIQcUexAMPZePB',
                    'Content-Type': 'application/json'}
         data = requests.post(url, data=json.dumps(body), headers=headers)
-        notification = NotificationStaff(staff=staff, message=message)
+        notification = NotificationTrainer(trainer=trainer, message=message)
         notification.save()
         return HttpResponse("True")
     except Exception as e:
         return HttpResponse("False")
 
 
-def delete_staff(request, staff_id):
-    staff = get_object_or_404(CustomUser, staff__id=staff_id)
-    staff.delete()
-    messages.success(request, "Staff deleted successfully!")
-    return redirect(reverse('manage_staff'))
+def delete_trainer(request, trainer_id):
+    trainer = get_object_or_404(CustomUser, trainer__id=trainer_id)
+    trainer.delete()
+    messages.success(request, "Trainer deleted successfully!")
+    return redirect(reverse('manage_trainer'))
 
 
-def delete_student(request, student_id):
-    student = get_object_or_404(CustomUser, student__id=student_id)
-    student.delete()
-    messages.success(request, "Student deleted successfully!")
-    return redirect(reverse('manage_student'))
+def delete_member(request, member_id):
+    member = get_object_or_404(CustomUser, member__id=member_id)
+    member.delete()
+    messages.success(request, "Member deleted successfully!")
+    return redirect(reverse('manage_member'))
 
 
-def delete_course(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
+def delete_work_out_plan(request, plan_id):
+    wop = get_object_or_404(WorkoutPlan, id=plan_id)
     try:
-        course.delete()
-        messages.success(request, "Course deleted successfully!")
+        wop.delete()
+        messages.success(request, "Work Out Plan deleted successfully!")
     except Exception:
         messages.error(
-            request, "Sorry, some students are assigned to this course already. Kindly change the affected student course and try again")
-    return redirect(reverse('manage_course'))
+            request, "Sorry, some members are assigned to this course already. Kindly change the affected student course and try again")
+    return redirect(reverse('manage_work_out_plan'))
 
 
-def delete_subject(request, subject_id):
-    subject = get_object_or_404(Subject, id=subject_id)
-    subject.delete()
-    messages.success(request, "Subject deleted successfully!")
-    return redirect(reverse('manage_subject'))
+def delete_work_out_plan_exercise(request, exercise_id):
+    wope = get_object_or_404(WorkoutPlanExercise, id=exercise_id)
+    wope.delete()
+    messages.success(request, "Work Out Plan Exercise deleted successfully!")
+    return redirect(reverse('manage_work_out_plan_exercise'))
 
 
 def delete_session(request, session_id):
@@ -721,5 +723,5 @@ def delete_session(request, session_id):
         messages.success(request, "Session deleted successfully!")
     except Exception:
         messages.error(
-            request, "There are students assigned to this session. Please move them to another session.")
+            request, "There are members assigned to this session. Please move them to another session.")
     return redirect(reverse('manage_session'))

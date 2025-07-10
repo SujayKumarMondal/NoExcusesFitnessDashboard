@@ -40,7 +40,7 @@ class Session(models.Model):
 
 
 class CustomUser(AbstractUser):
-    USER_TYPE = ((1, "HOD"), (2, "Staff"), (3, "Student"))
+    USER_TYPE = ((1, "Admin"), (2, "Trainer"), (3, "Member"))
     GENDER = [("M", "Male"), ("F", "Female")]
     
     
@@ -66,60 +66,60 @@ class Admin(models.Model):
 
 
 
-class Course(models.Model):
-    name = models.CharField(max_length=120)
+class WorkoutPlan(models.Model):
+    work_out = models.CharField(max_length=120)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return self.work_out
 
-class Book(models.Model):
-    name = models.CharField(max_length=200)
-    author = models.CharField(max_length=200)
-    isbn = models.PositiveIntegerField()
-    category = models.CharField(max_length=50)
-
-    def __str__(self):
-        return str(self.name) + " ["+str(self.isbn)+']'
-
-
-class Student(models.Model):
-    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.DO_NOTHING, null=True, blank=False)
+class Member(models.Model):
+    member = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    work_out = models.ForeignKey(WorkoutPlan, on_delete=models.DO_NOTHING, null=True, blank=False)
     session = models.ForeignKey(Session, on_delete=models.DO_NOTHING, null=True)
 
     def __str__(self):
-        return self.admin.last_name + ", " + self.admin.first_name
+        return self.member.first_name + ", " + self.member.last_name
+    
+class Suppliments(models.Model):
+    name = models.CharField(max_length=200)
+    brand = models.CharField(max_length=200)
+    price = models.CharField(max_length=13)
+    category = models.CharField(max_length=50)
 
-class Library(models.Model):
-    student = models.ForeignKey(Student,  on_delete=models.CASCADE, null=True, blank=False)
-    book = models.ForeignKey(Book,  on_delete=models.CASCADE, null=True, blank=False)
     def __str__(self):
-        return str(self.student)
+        return str(self.name) + " ["+str(self.brand)+']'+ " ["+str(self.price)+']'
+
+class SupplimentsStock(models.Model):
+    member = models.ForeignKey(Member,  on_delete=models.CASCADE, null=True, blank=False)
+    suppliments = models.ForeignKey(Suppliments,  on_delete=models.CASCADE, null=True, blank=False)
+    def __str__(self):
+        return str(self.member)
 
 def expiry():
     return datetime.today() + timedelta(days=14)
-class IssuedBook(models.Model):
-    student_id = models.CharField(max_length=100, blank=True) 
-    isbn = models.CharField(max_length=13)
+
+class IssuedSuppliments(models.Model):
+    member_id = models.CharField(max_length=100, blank=True) 
+    price = models.CharField(max_length=13)
     issued_date = models.DateField(auto_now=True)
     expiry_date = models.DateField(default=expiry)
 
 
 
-class Staff(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.DO_NOTHING, null=True, blank=False)
-    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+class Trainer(models.Model):
+    trainer = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    work_out_plan = models.ForeignKey(WorkoutPlan, on_delete=models.DO_NOTHING, null=True, blank=False)
 
     def __str__(self):
-        return self.admin.first_name + " " +  self.admin.last_name
+        return self.trainer.first_name + " " +  self.trainer.last_name
 
 
-class Subject(models.Model):
+class WorkoutPlanExercise(models.Model):
     name = models.CharField(max_length=120)
-    staff = models.ForeignKey(Staff,on_delete=models.CASCADE,)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    trainer = models.ForeignKey(Trainer,on_delete=models.CASCADE,)
+    plan = models.ForeignKey(WorkoutPlan, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -129,22 +129,22 @@ class Subject(models.Model):
 
 class Attendance(models.Model):
     session = models.ForeignKey(Session, on_delete=models.DO_NOTHING)
-    subject = models.ForeignKey(Subject, on_delete=models.DO_NOTHING)
+    work_out_plan = models.ForeignKey(WorkoutPlanExercise, on_delete=models.DO_NOTHING, null=True, blank=True)
     date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
 class AttendanceReport(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.DO_NOTHING)
+    member = models.ForeignKey(Member, on_delete=models.DO_NOTHING, null=True, blank=True)
     attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class LeaveReportStudent(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+class LeaveReportMember(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
     date = models.CharField(max_length=60)
     message = models.TextField()
     status = models.SmallIntegerField(default=0)
@@ -152,8 +152,8 @@ class LeaveReportStudent(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class LeaveReportStaff(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+class LeaveReportTrainer(models.Model):
+    trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE)
     date = models.CharField(max_length=60)
     message = models.TextField()
     status = models.SmallIntegerField(default=0)
@@ -161,39 +161,39 @@ class LeaveReportStaff(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class FeedbackStudent(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+class FeedbackMember(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
     feedback = models.TextField()
     reply = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class FeedbackStaff(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+class FeedbackTrainer(models.Model):
+    trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE)
     feedback = models.TextField()
     reply = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class NotificationStaff(models.Model):
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
+class NotificationTrainer(models.Model):
+    trainer = models.ForeignKey(Trainer, on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class NotificationStudent(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+class NotificationMember(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class StudentResult(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+class MemberResult(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    work_out_plan = models.ForeignKey(WorkoutPlanExercise, on_delete=models.CASCADE, null=True, blank=True)
     test = models.FloatField(default=0)
     exam = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -206,9 +206,9 @@ def create_user_profile(sender, instance, created, **kwargs):
         if instance.user_type == 1:
             Admin.objects.create(admin=instance)
         if instance.user_type == 2:
-            Staff.objects.create(admin=instance)
+            Trainer.objects.create(admin=instance)
         if instance.user_type == 3:
-            Student.objects.create(admin=instance)
+            Member.objects.create(admin=instance)
 
 
 @receiver(post_save, sender=CustomUser)
@@ -216,8 +216,8 @@ def save_user_profile(sender, instance, **kwargs):
     if instance.user_type == 1:
         instance.admin.save()
     if instance.user_type == 2:
-        instance.staff.save()
+        instance.trainer.save()
     if instance.user_type == 3:
-        instance.student.save()
+        instance.member.save()
 
 # todos
