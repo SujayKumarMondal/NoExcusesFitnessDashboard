@@ -27,22 +27,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for student in students %}
+                                {% for trainer in allTrainer %}
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{student.last_name}}, {{student.first_name}}</td>
-                                    <td>{{student.email}}</td>
-                                    <td>{{student.gender}}</td>
-                                    <td>{{student.student.course.name}}</td>
+                                    <td>{{trainer.last_name}}, {{trainer.first_name}}</td>
+                                    <td>{{trainer.email}}</td>
+                                    <td>{{trainer.gender}}</td>
+                                    <td>{{trainer.trainer.course.name}}</td>
                                     <td>
-                                        {% if student.profile_pic == ""  %}
+                                        {% if trainer.profile_pic == ""  %}
                                         No Image
                                         {% else %}
                                         <img class="img img-fluid mb-2" height="56" width="56"
-                                            src="{{student.profile_pic}}" alt="">
+                                            src="{{trainer.profile_pic}}" alt="">
                                         {% endif %}
                                     </td>
-                                    <td><button data-toggle = "modal" data-target = "#myModal"class="btn btn-primary show_notification" value="{{student.id}}">Send Notification</button> 
+                                    <td><button data-toggle = "modal" data-target = "#myModal"class="btn btn-primary show_notification" value="{{trainer.id}}">Send Notification</button> 
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -71,7 +71,7 @@
          <div class = "modal-body">
             <div class="form-group">
                 <input type="text" id="message" class='form-control'>
-                <input type="hidden"  id="student_id" class='form-control'>
+                <input type="hidden"  id="trainer_id" class='form-control'>
             </div>
          </div>
          
@@ -93,16 +93,16 @@
 {% block custom_js %}
   <script>
       $(".show_notification").click(function(){
-          $("#student_id").val($(this).val())
+          $("#trainer_id").val($(this).val())
       })
       $(".send_notification").click(function(){
-          var id = $("#student_id").val()
+          var id = $("#trainer_id").val()
           var message = $("#message").val()
           sendNotification(id,message);
       })
     function sendNotification(id,message){
         $.ajax({
-            url: "{% url 'send_student_notification' %}",
+            url: "{% url 'send_trainer_notification' %}",
             type: 'POST',
             data: {
                 id: id,
@@ -110,14 +110,12 @@
             }
         }).done(function (response) {
            
-                
-            if (response == 'True'){
-                alert("Notification Sent");
-                location.reload();
-              }else{
-                alert("Notification could not be saved. Please try again.");
-              }
-               
+          if (response == 'True'){
+            alert("Notification Sent");
+            location.reload();
+          }else{
+            alert("Notification could not be saved. Please try again.");
+          }
            
         }).fail(function (response) {
             alert("Error in saving token")

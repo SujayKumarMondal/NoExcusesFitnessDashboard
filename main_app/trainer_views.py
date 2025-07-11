@@ -18,7 +18,7 @@ def trainer_home(request):
     total_leave = LeaveReportTrainer.objects.filter(trainer=trainer).count()
     wope = WorkoutPlanExercise.objects.filter(trainer=trainer)
     total_wope = wope.count()
-    attendance_list = Attendance.objects.filter(subject__in=wope)
+    attendance_list = Attendance.objects.filter(wope__in=wope)
     total_attendance = attendance_list.count()
     attendance_list = []
     wope_list = []
@@ -48,7 +48,7 @@ def trainer_take_attendance(request):
         'page_title': 'Take Member Attendance'
     }
 
-    return render(request, 'trainer_template/staff_take_attendance.html', context)
+    return render(request, 'trainer_template/trainer_take_attendance.html', context)
 
 
 @csrf_exempt
@@ -82,7 +82,7 @@ def save_attendance(request):
     try:
         session = get_object_or_404(Session, id=session_id)
         wope = get_object_or_404(WorkoutPlanExercise, id=wope_id)
-        attendance = Attendance(session=session, subject=wope, date=date)
+        attendance = Attendance(session=session, wope=wope, date=date)
         attendance.save()
 
         for mem in members:
@@ -97,7 +97,7 @@ def save_attendance(request):
 
 def trainer_update_attendance(request):
     trainer = get_object_or_404(Trainer, admin=request.trainer)
-    wope = WorkoutPlanExercise.objects.filter(staff_id=trainer)
+    wope = WorkoutPlanExercise.objects.filter(trainer_id=trainer)
     sessions = Session.objects.all()
     context = {
         'work_out_plan_exercise': wope,
@@ -105,7 +105,7 @@ def trainer_update_attendance(request):
         'page_title': 'Update Trainer Attendance'
     }
 
-    return render(request, 'trainer_template/staff_update_attendance.html', context)
+    return render(request, 'trainer_template/trainer_update_attendance.html', context)
 
 
 @csrf_exempt
@@ -135,7 +135,7 @@ def update_attendance(request):
 
         for mem in members:
             member = get_object_or_404(
-                Member, admin_id=mem.get('id'))
+                Member, member_id=mem.get('id'))
             attendance_report = get_object_or_404(AttendanceReport, member=member, attendance=attendance)
             attendance_report.status = mem.get('status')
             attendance_report.save()
@@ -150,7 +150,7 @@ def trainer_apply_leave(request):
     trainer = get_object_or_404(Trainer, admin_id=request.trainer.id)
     context = {
         'form': form,
-        'leave_history': LeaveReportTrainer.objects.filter(staff=trainer),
+        'leave_history': LeaveReportTrainer.objects.filter(trainer=trainer),
         'page_title': 'Apply for Trainer Leave'
     }
     if request.method == 'POST':
@@ -166,7 +166,7 @@ def trainer_apply_leave(request):
                 messages.error(request, "Could not apply!")
         else:
             messages.error(request, "Form has errors!")
-    return render(request, "trainer_template/staff_apply_leave.html", context)
+    return render(request, "trainer_template/trainer_apply_leave.html", context)
 
 
 def trainer_feedback(request):
@@ -189,7 +189,7 @@ def trainer_feedback(request):
                 messages.error(request, "Could not Submit!")
         else:
             messages.error(request, "Form has errors!")
-    return render(request, "trainer_template/staff_feedback.html", context)
+    return render(request, "trainer_template/trainer_feedback.html", context)
 
 
 def trainer_view_profile(request):
@@ -223,13 +223,13 @@ def trainer_view_profile(request):
                 return redirect(reverse('trainer_view_profile'))
             else:
                 messages.error(request, "Invalid Data Provided")
-                return render(request, "trainer_template/staff_view_profile.html", context)
+                return render(request, "trainer_template/trainer_view_profile.html", context)
         except Exception as e:
             messages.error(
                 request, "Error Occured While Updating Profile " + str(e))
-            return render(request, "trainer_template/staff_view_profile.html", context)
+            return render(request, "trainer_template/trainer_view_profile.html", context)
 
-    return render(request, "trainer_template/staff_view_profile.html", context)
+    return render(request, "trainer_template/trainer_view_profile.html", context)
 
 
 @csrf_exempt
@@ -246,12 +246,12 @@ def trainer_fcmtoken(request):
 
 def trainer_view_notification(request):
     trainer = get_object_or_404(Trainer, admin=request.trainer)
-    notifications = NotificationTrainer.objects.filter(staff=trainer)
+    notifications = NotificationTrainer.objects.filter(trainer=trainer)
     context = {
         'notifications': notifications,
         'page_title': "View Trainer Notifications"
     }
-    return render(request, "trainer_template/staff_view_notification.html", context)
+    return render(request, "trainer_template/trainer_view_notification.html", context)
 
 
 def trainer_add_result(request):
@@ -260,31 +260,31 @@ def trainer_add_result(request):
     sessions = Session.objects.all()
     context = {
         'page_title': 'Member Result Upload',
-        'subjects': wope,
+        'work_out_plan_exercise': wope,
         'sessions': sessions
     }
     if request.method == 'POST':
         try:
             member_id = request.POST.get('member_list')
-            subject_id = request.POST.get('wope')
+            wope_id = request.POST.get('wope')
             test = request.POST.get('test')
             exam = request.POST.get('exam')
             member = get_object_or_404(Member, id=member_id)
-            wope = get_object_or_404(WorkoutPlanExercise, id=subject_id)
+            wope = get_object_or_404(WorkoutPlanExercise, id=wope_id)
             try:
                 data = MemberResult.objects.get(
-                    member=member, subject=wope)
+                    member=member, wope=wope)
                 data.exam = exam
                 data.test = test
                 data.save()
                 messages.success(request, "Scores Updated")
             except:
-                result = MemberResult(member=member, subject=wope, test=test, exam=exam)
+                result = MemberResult(member=member, wope=wope, test=test, exam=exam)
                 result.save()
                 messages.success(request, "Scores Saved")
         except Exception as e:
             messages.warning(request, "Error Occured While Processing Form")
-    return render(request, "trainer_template/staff_add_result.html", context)
+    return render(request, "trainer_template/trainer_add_result.html", context)
 
 
 @csrf_exempt
@@ -348,7 +348,6 @@ def view_issued_suppliment(request):
             day=d-14
             fine=day*5
         sup = list(models.Suppliments.objects.filter(price=i.price))
-        # students = list(models.Student.objects.filter(admin=i.admin))
         i=0
         for l in sup:
             t=(sup[i].name,sup[i].price,issuedSuppliments[0].issued_date,issuedSuppliments[0].expiry_date,fine)

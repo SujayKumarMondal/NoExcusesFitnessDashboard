@@ -18,32 +18,30 @@
                         <table class="table table-bordered table-hover">
                             <tr>
                                 <th>#</th>
-                                <th>Staff</th>
-                                <th>Course</th>
+                                <th>Member</th>
+                                <th>Session</th>
                                 <th>Message</th>
-                                <th>Leave Date</th>
-                                <th>Submitted On</th>
+                                <th>Sent On</th>
+                                <th>Replied On</th>
                                 <th>Action</th>
 
                             </tr>
-                            {% for leave in  allLeave %}
+                            {% for feedback in  feedbacks %}
                               <tr>
                                   <td>{{forloop.counter}}</td>
-                                  <td>{{leave.staff}}</td>
-                                  <td>{{leave.staff.course}}</td>
-                                  <td>{{leave.message}}</td>
-                                  <td>{{leave.date}}</td>
-                                  <td>{{leave.created_at}}</td>
+                                  <td>{{feedback.member}}</td>
+                                  <td>{{feedback.member.session}}</td>
+                                  <td>{{feedback.feedback}}</td>
                                  
                                       
-                                      {% if leave.status == 0 %}
-                                           <td> <button data-toggle = "modal" data-target = "#reply_modal" value="{{leave.id}}" class="btn btn-success reply_open_modal">Reply</button>
-{% elif leave.status == -1 %}
-<td><span  class='badge badge-danger'>Rejected</span></td>
-{% else %}
-<td><span  class='badge badge-success'>Approved</span></td>
-
-                                            <td>{{feedback.updated_at}}</td>
+                                      {% if feedback.reply == "" %}
+                                      <td>{{feedback.created_at}}</td>
+                                      <td><span  class='badge badge-warning'>Pending Response</span></td>
+                                           <td> <button data-toggle = "modal" data-target = "#reply_modal" value="{{feedback.id}}" class="btn btn-success reply_open_modal">Reply</button>
+                                          {% else %}
+                                          <td>{{feedback.created_at}}</td>
+                                          <td>{{feedback.updated_at}}</td>
+                                            <td>{{feedback.reply}}</td>
                                       {% endif %}
                                           
                                   </td>
@@ -77,12 +75,8 @@
          
          <div class = "modal-body">
              <input type="hidden"  id="id">
-           <p> Reply To <span id="reply_name"></span>'s Leave Request</p>  
-           <select id="reply_leave_status" class="form-control">
-<option value="">-- Select --</option>
-<option value="1">Approve</option>
-<option value="-1">Reject</option>
-           </select>
+           <p> Reply <span id="reply_name"></span></p>  
+           <textarea name="reply_message" id="reply_message" cols="30" rows="10" class="form-control"></textarea>
         </div>
         
         <div class = "modal-footer">
@@ -90,7 +84,7 @@
                 Close
             </button>
             
-            <button id="reply_btn" class="btn btn-success btn-block">Submit</button>
+            <button id="reply_btn" class="btn btn-success btn-block">Reply</button>
          
          </div>
          
@@ -113,30 +107,25 @@
             
             $("#reply_btn").on("click", function(){
                 var id = $("#id").val()
-                var status = $("#reply_leave_status").val()
-                if (status == '1' || status == '-1'){
+                var reply = $("#reply_message").val()
 
-    $.ajax({
-        url: "{% url 'view_staff_leave' %}",
-        type:'POST',
-        data:{
-              id:id,
-              status:status
-        }
-    }).done(function(response){
-        if (response == "True"){
-            alert("Leave Response Has Been Saved!")
-            location.reload()
-        }else{
-            alert("Reply Could Not Be Sent")
-        }
-    }).fail(function(response){
-        alert("Error Occured. ")
-    })
-}else{
-    alert("Choose valid response")
-}
-
+                $.ajax({
+                    url: "{% url 'member_feedback_message' %}",
+                    type:'POST',
+                    data:{
+                          id:id,
+                          reply:reply
+                    }
+                }).done(function(response){
+                    if (response == "True"){
+                        alert("Reply Sent")
+                        location.reload()
+                    }else{
+                        alert("Reply Could Not Be Sent")
+                    }
+                }).fail(function(response){
+                    alert("Error Occured. ")
+                })
           })
       })
   </script>

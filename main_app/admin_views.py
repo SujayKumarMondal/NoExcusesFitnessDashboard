@@ -15,7 +15,7 @@ from .models import *
 
 # For Admins
 def admin_home(request):
-    total_trainer = Trainer.objects.all().count()
+    total_trainers = Trainer.objects.all().count()
     total_members = Member.objects.all().count()
     work_out_plans = WorkoutPlanExercise.objects.all()
     total_work_out_plan = work_out_plans.count()
@@ -33,21 +33,21 @@ def admin_home(request):
     work_out_all = WorkoutPlan.objects.all()
     work_out_name_list = []
     work_out_plan_count_list = []
-    member_count_list_in_wo = []
+    member_count_list_in_wope = []
 
     for woa in work_out_all:
-        work_out_plans = WorkoutPlanExercise.objects.filter(course_id=woa.id).count()
-        members = Member.objects.filter(course_id=woa.id).count()
+        work_out_plans = WorkoutPlanExercise.objects.filter(id=woa.id).count()
+        members = Member.objects.filter(id=woa.id).count()
         work_out_name_list.append(woa.work_out)
         work_out_plan_count_list.append(work_out_plans)
-        member_count_list_in_wo.append(members)
+        member_count_list_in_wope.append(members)
     
     work_out_plan_all = WorkoutPlanExercise.objects.all()
     work_out_plan_list = []
     member_count_list_in_wop = []
     for wopa in work_out_plan_all:
         wop = WorkoutPlan.objects.get(id=wopa.plan.id)
-        member_count = Member.objects.filter(course_id=wopa.id).count()
+        member_count = Member.objects.filter(id=wopa.id).count()
         work_out_plan_list.append(wopa.name)
         member_count_list_in_wop.append(member_count)
 
@@ -70,7 +70,7 @@ def admin_home(request):
     context = {
         'page_title': "NoExcusesFitness(Administrative Dashboard)",
         'total_members': total_members,
-        'total_trainers': total_trainer,
+        'total_trainers': total_trainers,
         'total_work_out': total_work_out,
         'total_work_out_plan': total_work_out_plan,
         'work_out_plan_list': work_out_plan_list,
@@ -78,8 +78,8 @@ def admin_home(request):
         'member_attendance_present_list': member_attendance_present_list,
         'member_attendance_leave_list': member_attendance_leave_list,
         "member_name_list": member_name_list,
-        "member_count_list_in_subject": member_count_list_in_wop,
-        "member_count_list_in_course": member_count_list_in_wo,
+        "member_count_list_in_work_out_plan_exercise": member_count_list_in_wope,
+        "member_count_list_in_work_out_plan": member_count_list_in_wop,
         "work_out_plan_name_list": work_out_name_list,
 
     }
@@ -205,10 +205,10 @@ def add_work_out_plan_exercise(request):
 
 
 def manage_trainer(request):
-    allTrainer = CustomUser.objects.filter(user_type=2)
+    trainers = CustomUser.objects.filter(user_type=2)
     context = {
-        'allTrainer': allTrainer,
-        'page_title': 'Manage Trainer'
+        'trainers': trainers,
+        'page_title': 'Manage Trainers'
     }
     return render(request, "admin_template/manage_trainer.html", context)
 
@@ -340,19 +340,19 @@ def edit_member(request, member_id):
         return render(request, "admin_template/edit_member_template.html", context)
 
 
-def edit_work_out_plan(request, plan_id):
-    instance = get_object_or_404(WorkoutPlan, id=plan_id)
+def edit_work_out_plan(request, id):
+    instance = get_object_or_404(WorkoutPlan, id=id)
     form = WorkoutPlanForm(request.POST or None, instance=instance)
     context = {
         'form': form,
-        'plan_id': plan_id,
+        'id': id,
         'page_title': 'Edit Work Out Plan'
     }
     if request.method == 'POST':
         if form.is_valid():
             work_out = form.cleaned_data.get('work_out')
             try:
-                wop = WorkoutPlan.objects.get(id=plan_id)
+                wop = WorkoutPlan.objects.get(id=id)
                 wop.work_out = work_out
                 wop.save()
                 messages.success(request, "Successfully Updated")
@@ -361,7 +361,7 @@ def edit_work_out_plan(request, plan_id):
         else:
             messages.error(request, "Could Not Update")
 
-    return render(request, 'admin_template/edit_course_template.html', context)
+    return render(request, 'admin_template/edit_work_out_plan_template.html', context)
 
 
 def edit_work_out_plan_exercise(request, exercise_id):
@@ -384,12 +384,12 @@ def edit_work_out_plan_exercise(request, exercise_id):
                 wope.plan = plan
                 wope.save()
                 messages.success(request, "Successfully Updated")
-                return redirect(reverse('edit_subject', args=[exercise_id]))
+                return redirect(reverse('edit_work_out_plan_exercise', args=[exercise_id]))
             except Exception as e:
                 messages.error(request, "Could Not Add " + str(e))
         else:
             messages.error(request, "Fill Form Properly")
-    return render(request, 'admin_template/edit_subject_template.html', context)
+    return render(request, 'admin_template/edit_work_out_plan_exercise_template.html', context)
 
 
 def add_session(request):
@@ -457,7 +457,7 @@ def member_feedback_message(request):
             'feedbacks': feedbacks,
             'page_title': 'Member Feedback Messages'
         }
-        return render(request, 'admin_template/student_feedback_template.html', context)
+        return render(request, 'admin_template/member_feedback_template.html', context)
     else:
         feedback_id = request.POST.get('id')
         try:
@@ -478,7 +478,7 @@ def trainer_feedback_message(request):
             'feedbacks': feedbacks,
             'page_title': 'Trainer Feedback Messages'
         }
-        return render(request, 'admin_template/staff_feedback_template.html', context)
+        return render(request, 'admin_template/trainer_feedback_template.html', context)
     else:
         feedback_id = request.POST.get('id')
         try:
@@ -499,7 +499,7 @@ def view_trainer_leave(request):
             'allLeave': allLeave,
             'page_title': 'Leave Applications From Trainer'
         }
-        return render(request, "admin_template/staff_leave_view.html", context)
+        return render(request, "admin_template/trainer_leave_view.html", context)
     else:
         id = request.POST.get('id')
         status = request.POST.get('status')
@@ -524,7 +524,7 @@ def view_member_leave(request):
             'allLeave': allLeave,
             'page_title': 'Leave Applications From Member'
         }
-        return render(request, "admin_template/student_leave_view.html", context)
+        return render(request, "admin_template/member_leave_view.html", context)
     else:
         id = request.POST.get('id')
         status = request.POST.get('status')
@@ -542,10 +542,10 @@ def view_member_leave(request):
 
 
 def admin_view_attendance(request):
-    subjects = WorkoutPlanExercise.objects.all()
+    wope = WorkoutPlanExercise.objects.all()
     sessions = Session.objects.all()
     context = {
-        'subjects': subjects,
+        'work_out_plan_exercise': wope,
         'sessions': sessions,
         'page_title': 'View Attendance'
     }
@@ -555,11 +555,11 @@ def admin_view_attendance(request):
 
 @csrf_exempt
 def get_admin_attendance(request):
-    plan_id = request.POST.get('work_out_plan')
+    id = request.POST.get('work_out_plan')
     session_id = request.POST.get('session')
     attendance_date_id = request.POST.get('attendance_date_id')
     try:
-        work_out_plan = get_object_or_404(WorkoutPlan, id=plan_id)
+        work_out_plan = get_object_or_404(WorkoutPlan, id=id)
         session = get_object_or_404(Session, id=session_id)
         attendance = get_object_or_404(
             Attendance, id=attendance_date_id, session=session)
@@ -618,7 +618,7 @@ def admin_notify_trainer(request):
         'page_title': "Send Notifications To Trainer",
         'allTrainer': trainer
     }
-    return render(request, "admin_template/staff_notification.html", context)
+    return render(request, "admin_template/trainer_notification.html", context)
 
 
 def admin_notify_member(request):
@@ -627,7 +627,7 @@ def admin_notify_member(request):
         'page_title': "Send Notifications To Member",
         'allMember': member
     }
-    return render(request, "admin_template/student_notification.html", context)
+    return render(request, "admin_template/member_notification.html", context)
 
 
 @csrf_exempt
@@ -668,7 +668,7 @@ def send_trainer_notification(request):
             'notification': {
                 'title': "Trainer Management System",
                 'body': message,
-                'click_action': reverse('staff_view_notification'),
+                'click_action': reverse('trainer_view_notification'),
                 'icon': static('dist/img/AdminLTELogo.png')
             },
             'to': trainer.trainer.fcm_token
@@ -698,14 +698,14 @@ def delete_member(request, member_id):
     return redirect(reverse('manage_member'))
 
 
-def delete_work_out_plan(request, plan_id):
-    wop = get_object_or_404(WorkoutPlan, id=plan_id)
+def delete_work_out_plan(request, id):
+    wop = get_object_or_404(WorkoutPlan, id=id)
     try:
         wop.delete()
         messages.success(request, "Work Out Plan deleted successfully!")
     except Exception:
         messages.error(
-            request, "Sorry, some members are assigned to this course already. Kindly change the affected student course and try again")
+            request, "Sorry, some members are assigned to this course already. Kindly change the affected member course and try again")
     return redirect(reverse('manage_work_out_plan'))
 
 

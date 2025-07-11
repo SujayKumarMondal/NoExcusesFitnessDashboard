@@ -15,7 +15,7 @@ from .models import *
 
 
 def member_home(request):
-    member = get_object_or_404(Member, member=request.member)
+    member = get_object_or_404(Member, member=request.user)
     total_work_out_plan_exercise = WorkoutPlanExercise.objects.filter(plan=member.plan).count()
     total_attendance = AttendanceReport.objects.filter(member=member).count()
     total_present = AttendanceReport.objects.filter(member=member, status=True).count()
@@ -54,14 +54,14 @@ def member_home(request):
 
 @ csrf_exempt
 def member_view_attendance(request):
-    member = get_object_or_404(Member, member=request.member)
+    member = get_object_or_404(Member, member=request.user)
     if request.method != 'POST':
         work_out = get_object_or_404(WorkoutPlan, id=member.work_out.id)
         context = {
             'wope': WorkoutPlanExercise.objects.filter(work_out=work_out),
             'page_title': 'View Member Attendance'
         }
-        return render(request, 'member_template/student_view_attendance.html', context)
+        return render(request, 'member_template/member_view_attendance.html', context)
     else:
         exercise_id = request.POST.get('wope')
         start = request.POST.get('start_date')
@@ -88,7 +88,7 @@ def member_view_attendance(request):
 
 def member_apply_leave(request):
     form = LeaveReportMemberForm(request.POST or None)
-    member = get_object_or_404(Member, admin_id=request.member.id)
+    member = get_object_or_404(Member, member_id=request.user.id)
     context = {
         'form': form,
         'leave_history': LeaveReportMember.objects.filter(member=member),
@@ -107,12 +107,12 @@ def member_apply_leave(request):
                 messages.error(request, "Could not submit")
         else:
             messages.error(request, "Form has errors!")
-    return render(request, "member_template/student_apply_leave.html", context)
+    return render(request, "member_template/member_apply_leave.html", context)
 
 
 def member_feedback(request):
     form = FeedbackMemberForm(request.POST or None)
-    member = get_object_or_404(Member, admin_id=request.member.id)
+    member = get_object_or_404(Member, member_id=request.user.id)
     context = {
         'form': form,
         'feedbacks': FeedbackMember.objects.filter(member=member),
@@ -132,11 +132,11 @@ def member_feedback(request):
                 messages.error(request, "Could not Submit!")
         else:
             messages.error(request, "Form has errors!")
-    return render(request, "member_template/student_feedback.html", context)
+    return render(request, "member_template/member_feedback.html", context)
 
 
 def member_view_profile(request):
-    member = get_object_or_404(Member, admin=request.member)
+    member = get_object_or_404(Member, member=request.user)
     form = MemberEditForm(request.POST or None, request.FILES or None,
                            instance=member)
     context = {'form': form,
@@ -172,7 +172,7 @@ def member_view_profile(request):
         except Exception as e:
             messages.error(request, "Error Occured While Updating Profile " + str(e))
 
-    return render(request, "member_template/student_view_profile.html", context)
+    return render(request, "member_template/member_view_profile.html", context)
 
 
 @csrf_exempt
@@ -188,23 +188,23 @@ def member_fcmtoken(request):
 
 
 def member_view_notification(request):
-    member = get_object_or_404(Member, admin=request.member)
+    member = get_object_or_404(Member, member=request.user)
     notifications = NotificationMember.objects.filter(member=member)
     context = {
         'notifications': notifications,
         'page_title': "View Member Notifications"
     }
-    return render(request, "member_template/student_view_notification.html", context)
+    return render(request, "member_template/member_view_notification.html", context)
 
 
 def member_view_result(request):
-    member = get_object_or_404(Member, admin=request.member)
+    member = get_object_or_404(Member, member=request.user)
     results = MemberResult.objects.filter(member=member)
     context = {
         'results': results,
         'page_title': "View Member Results"
     }
-    return render(request, "member_template/student_view_result.html", context)
+    return render(request, "member_template/member_view_result.html", context)
 
 
 #library

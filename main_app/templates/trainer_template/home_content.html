@@ -10,9 +10,9 @@
                 <!-- small box -->
                 <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>{{total_students}}</h3>
+                        <h3>{{total_members}}</h3>
 
-                        <p>Total Students</p>
+                        <p>Total Members</p>
                     </div>
                     <div class="icon">
                       <i class="nav-icon fas fa-user-graduate"></i>
@@ -259,7 +259,7 @@
   
           function sendToServer(token){
             $.ajax({
-              url: "{% url 'staff_fcmtoken' %}",
+              url: "{% url 'trainer_fcmtoken' %}",
               type: 'POST',
               data: {
                   token: token,

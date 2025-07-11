@@ -29,7 +29,7 @@ class CustomUserForm(FormSettings):
         super(CustomUserForm, self).__init__(*args, **kwargs)
 
         if kwargs.get('instance'):
-            instance = kwargs.get('instance').admin.__dict__
+            instance = kwargs.get('instance').member.__dict__
             self.fields['password'].required = False
             for field in CustomUserForm.Meta.fields:
                 self.fields[field].initial = instance.get(field)

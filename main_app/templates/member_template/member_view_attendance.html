@@ -100,7 +100,7 @@
             }
             $("#attendance_data").html(null)
             $.ajax({
-                url: "{% url 'student_view_attendance' %}",
+                url: "{% url 'member_view_attendance' %}",
                 type: 'POST',
                 data: {
                     subject: subject,

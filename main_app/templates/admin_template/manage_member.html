@@ -27,25 +27,29 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for student in students %}
+                                {% for member in members %}
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{student.last_name}}, {{student.first_name}}</td>
-                                    <td>{{student.email}}</td>
-                                    <td>{{student.gender}}</td>
-                                    <td>{{student.student.course.name}}</td>
+                                    <td>{{member.last_name}}, {{member.first_name}}</td>
+                                    <td>{{member.email}}</td>
+                                    <td>{{member.gender}}</td>
+                                    <td>{{member.member.course.name}}</td>
                                     <td>
-                                        {% if student.profile_pic == ""  %}
+                                        {% if member.profile_pic == ""  %}
                                         No Image
                                         {% else %}
                                         <img class="img img-fluid mb-2" height="56" width="56"
-                                            src="{{student.profile_pic}}" alt="">
+                                            src="{{member.profile_pic}}" alt="">
                                         {% endif %}
                                     </td>
                                     
-                                    <td><a href="{% url 'edit_student' student.student.id %}" class="btn btn-info">Edit</a> -
-                                        <a href="{% url 'delete_student' student.student.id %}" class="btn btn-danger" onclick="return confirm('Are you sure about this ?')">Delete</a>
-
+                                    <td>
+                                        {% if member.member %}
+                                            <a href="{% url 'edit_member' member.member.id %}" class="btn btn-info">Edit</a> -
+                                            <a href="{% url 'delete_member' member.member.id %}" class="btn btn-danger" onclick="return confirm('Are you sure about this ?')">Delete</a>
+                                        {% comment %} {% else %}
+                                            <span class="text-muted">User missing</span> {% endcomment %}
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}

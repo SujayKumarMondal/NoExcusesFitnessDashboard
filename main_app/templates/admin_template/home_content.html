@@ -2,6 +2,42 @@
 {% load static %}
 {% block page_title %}{{page_title}}{% endblock page_title %}
 {% block content %}
+<style>
+  .small-box {
+      min-height: 140px; /* force equal height */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+  }
+
+  .small-box .inner {
+      flex-grow: 1;
+  }
+
+  .small-box .icon {
+      font-size: 48px;
+      opacity: 0.3;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+  }
+
+  .small-box-footer {
+      padding: 6px 10px;
+      font-size: 14px;
+  }
+
+  .small-box .inner h3 {
+      font-size: 28px;
+      font-weight: bold;
+  }
+
+  .small-box .inner p {
+      font-size: 16px;
+      margin: 0;
+  }
+</style>
+
 <section class="content">
     <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
@@ -10,7 +46,7 @@
                 <!-- small box -->
                 <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>{{total_students}}</h3>
+                        <h3>{{total_members}}</h3>
 
                         <p>Total Members</p>
                     </div>
@@ -26,9 +62,9 @@
                 <!-- small box -->
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>{{total_staff}}</h3>
+                        <h3>{{total_trainers}}</h3>
 
-                        <p>Total Trainer</p>
+                        <p>Total Trainers</p>
                     </div>
                     <div class="icon">
                       <i class="nav-icon fas fa-users"></i>
@@ -41,14 +77,14 @@
                 <!-- small box -->
                 <div class="small-box bg-purple">
                     <div class="inner">
-                        <h3>{{total_course}}</h3>
+                        <h3>{{total_work_out}}</h3>
 
-                        <p>Total Course</p>
+                        <p>Total Work Out Plans</p>
                     </div>
                     <div class="icon">
                       <i class="nav-icon fas fa-th-list"></i>
                     </div>
-                    <a href="{% url 'manage_course' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{% url 'manage_work_out_plan' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -56,14 +92,14 @@
                 <!-- small box -->
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>{{total_subject}}</h3>
+                        <h3>{{total_work_out_plan}}</h3>
 
-                        <p>Total Subjects</p>
+                        <p>Total Work Out Plan Exercises</p>
                     </div>
                     <div class="icon">
                       <i class="nav-icon fas fa-book"></i>
                     </div>
-                    <a href="{% url 'manage_subject' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{% url 'manage_work_out_plan_exercise' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -117,7 +153,7 @@
             <!-- BAR CHART -->
             <div class="card card-dark">
               <div class="card-header">
-                <h3 class="card-title">Student's Attendance & Leave Overview</h3>
+                <h3 class="card-title">Member's Attendance & Leave Overview</h3>
 
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
@@ -190,10 +226,10 @@
   <script>
       $(document).ready(function(){
         var donutData        = {
-            labels: ['Students', 'Staff'],
+            labels: ['Members', 'Trainer'],
             datasets: [
               {
-                data:[{{total_students}}, {{total_staff}}],
+                data:[{{total_members}}, {{total_trainer}}],
                 backgroundColor : ['#00a65a', '#f39c12',],
               }
             ]
@@ -258,14 +294,14 @@
         })
        
 
-      // Total Students in Each Subject
-      var student_count_list_in_subject = {{ student_count_list_in_subject }}
+      // Total Members in Each Subject
+      var member_count_list_in_work_out_plan_exercise = {{ member_count_list_in_wope }}
       var subject_list = {{ subject_list|safe }}
       var pieData3 = {
         labels: subject_list,
         datasets: [
           {
-            data: student_count_list_in_subject,
+            data: member_count_list_in_wope,
             backgroundColor : ['#8f251f', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#894e9c', '#0b523a', '#a1156d', '#9e4603'],
           }
         ]
@@ -290,13 +326,13 @@
 
       
 
-         //- BAR CHART - Student Attendance & Leave Overview //
-      var student_attendance_present_list = {{ student_attendance_present_list }};
-      var student_attendance_leave_list = {{ student_attendance_leave_list }};
-      var student_name_list = {{ student_name_list|safe }};
+         //- BAR CHART - member Attendance & Leave Overview //
+      var member_attendance_present_list = {{ member_attendance_present_list }};
+      var member_attendance_leave_list = {{ member_attendance_leave_list }};
+      var member_name_list = {{ member_name_list|safe }};
 
       var areaChartData2 = {
-        labels  : student_name_list,
+        labels  : member_name_list,
         datasets: [
           {
             label               : 'Absent/Leave',
@@ -307,7 +343,7 @@
             pointStrokeColor    : 'rgba(60,141,188,1)',
             pointHighlightFill  : '#fff',
             pointHighlightStroke: 'rgba(60,141,188,1)',
-            data                : student_attendance_leave_list 
+            data                : member_attendance_leave_list 
           },
           {
             label               : 'Attendance',
@@ -318,7 +354,7 @@
             pointStrokeColor    : '#c1c7d1',
             pointHighlightFill  : '#fff',
             pointHighlightStroke: 'rgba(220,220,220,1)',
-            data                : student_attendance_present_list
+            data                : member_attendance_present_list
           },
         ]
       }
@@ -344,15 +380,15 @@
       })
       
 
-      // Total Students in Each Course
+      // Total Members in Each Course
       //var donutChartCanvas = $('#pieChart2').get(0).getContext('2d')
       var course_name_list = {{ course_name_list|safe }}
-      var student_count_list_in_course = {{ student_count_list_in_course }}
+      var member_count_list_in_work_out_plan = {{ member_count_list_in_wop }}
       var pieData2 = {
         labels: course_name_list,
         datasets: [
           {
-            data: student_count_list_in_course,
+            data: member_count_list_in_wop,
             backgroundColor : ['#cc0404', '#00a65a', '#f39c12', '#00A4BD', '#045c8f', '#894e9c', '#9e4603', '#71bfb2'],
           }
         ]

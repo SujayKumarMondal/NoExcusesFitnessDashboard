@@ -47,28 +47,28 @@
 <script>
     $(document).ready(function () {
         $("#id_subject").change(function () {
-            fetchStudents();
+            fetchMembers();
             });
             $("#id_session_year").change(function () {
-                fetchStudents();
+                fetchMembers();
                 });
-   $("#id_student").change(function () {
-    fetch_student_result();
+   $("#id_member").change(function () {
+    fetch_member_result();
                 });
                 $("#id_exam").hide()
                 $("#id_test").hide()
                 $("#update_result").hide()
                 $('label[for="id_test"]').hide();
                 $('label[for="id_exam"]').hide();
-        function fetchStudents(){
+        function fetchmembers(){
             var subject = $("#id_subject").val()
             var session = $("#id_session_year").val()
-            $("#id_student").html(null)
+            $("#id_member").html(null)
             if (session.length  == 0 || subject.length == 0 || session < 1 || subject < 1){
                 return false;
             }
             $.ajax({
-                url: "{% url 'get_students' %}",
+                url: "{% url 'get_members' %}",
                 type: 'POST',
                 data: {
                     subject: subject,
@@ -79,21 +79,21 @@
                 if (json_data.length < 1) {
                     alert("No data to display")
                 } else {
-                    var div_data = "<option>Select Student</option>"
+                    var div_data = "<option>Select Member</option>"
 
                     for (key in json_data) {
                         div_data += "<option value='" + json_data[key]['id'] + "'>" + json_data[key]['name'] + " </option>"
                     }
              
-                    $("#id_student").html(div_data)
+                    $("#id_member").html(div_data)
                 }
             }).fail(function (response) {
-                alert("Error in fetching students")
+                alert("Error in fetching members")
             })
                }
 
-               function fetch_student_result(){
-                var student = $("#id_student").val()
+               function fetch_member_result(){
+                var member = $("#id_member").val()
                 var subject = $("#id_subject").val()
                 $("#id_test").val(null)
                 $("#id_exam").val(null)
@@ -102,15 +102,15 @@
                 $("#id_test").hide()
                 $('label[for="id_test"]').hide();
                 $('label[for="id_exam"]').hide();
-                if (student.length  == 0 || subject.length == 0 || student < 1 || subject < 1){
+                if (member.length  == 0 || subject.length == 0 || member < 1 || subject < 1){
                     return false;
                 }
                 $.ajax({
-                    url: "{% url 'fetch_student_result' %}",
+                    url: "{% url 'fetch_member_result' %}",
                     type: 'POST',
                     data: {
                         subject: subject,
-                        student:student
+                        member:member
                     }
                 }).done(function (response) {
                     if (response == 'False') {
@@ -128,7 +128,7 @@
 
                     }
                 }).fail(function (response) {
-                    alert("Error in fetching students")
+                    alert("Error in fetching members")
                 })
                }
 

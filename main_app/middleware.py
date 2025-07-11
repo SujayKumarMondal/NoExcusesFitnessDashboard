@@ -11,10 +11,10 @@ class LoginCheckMiddleWare(MiddlewareMixin):
             if user.user_type == '1': # Is it the Admin
                 if modulename == 'main_app.member_views':
                     return redirect(reverse('admin_home'))
-            elif user.user_type == '2': #  Staff :-/ ?
+            elif user.user_type == '2': #  Trainer :-/ ?
                 if modulename == 'main_app.member_views' or modulename == 'main_app.admin_views':
                     return redirect(reverse('trainer_home'))
-            elif user.user_type == '3': # ... or Student ?
+            elif user.user_type == '3': # ... or Member ?
                 if modulename == 'main_app.admin_views' or modulename == 'main_app.trainer_views':
                     return redirect(reverse('member_home'))
             else: # None of the aforementioned ? Please take the user to login page
