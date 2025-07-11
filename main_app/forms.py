@@ -29,7 +29,7 @@ class CustomUserForm(FormSettings):
         super(CustomUserForm, self).__init__(*args, **kwargs)
 
         if kwargs.get('instance'):
-            instance = kwargs.get('instance').member.__dict__
+            instance = kwargs.get('instance').admin.__dict__
             self.fields['password'].required = False
             for field in CustomUserForm.Meta.fields:
                 self.fields[field].initial = instance.get(field)
@@ -56,14 +56,14 @@ class CustomUserForm(FormSettings):
         fields = ['first_name', 'last_name', 'email', 'gender',  'password','profile_pic', 'address' ]
 
 
-class MemberForm(CustomUserForm):
+class StudentForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
-        super(MemberForm, self).__init__(*args, **kwargs)
+        super(StudentForm, self).__init__(*args, **kwargs)
 
     class Meta(CustomUserForm.Meta):
-        model = Member
+        model = Student
         fields = CustomUserForm.Meta.fields + \
-            ['work_out', 'session']
+            ['course', 'session']
 
 
 class AdminForm(CustomUserForm):
@@ -75,33 +75,33 @@ class AdminForm(CustomUserForm):
         fields = CustomUserForm.Meta.fields
 
 
-class TrainerForm(CustomUserForm):
+class StaffForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
-        super(TrainerForm, self).__init__(*args, **kwargs)
+        super(StaffForm, self).__init__(*args, **kwargs)
 
     class Meta(CustomUserForm.Meta):
-        model = Trainer
+        model = Staff
         fields = CustomUserForm.Meta.fields + \
-            ['work_out_plan' ]
+            ['course' ]
 
 
-class WorkoutPlanForm(FormSettings):
+class CourseForm(FormSettings):
     def __init__(self, *args, **kwargs):
-        super(WorkoutPlanForm, self).__init__(*args, **kwargs)
+        super(CourseForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        fields = ['work_out']
-        model = WorkoutPlan
+        fields = ['name']
+        model = Course
 
 
-class WorkoutPlanExerciseForm(FormSettings):
+class SubjectForm(FormSettings):
 
     def __init__(self, *args, **kwargs):
-        super(WorkoutPlanExerciseForm, self).__init__(*args, **kwargs)
+        super(SubjectForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = WorkoutPlanExercise
-        fields = ['name', 'trainer', 'plan']
+        model = Subject
+        fields = ['name', 'staff', 'course']
 
 
 class SessionForm(FormSettings):
@@ -117,65 +117,65 @@ class SessionForm(FormSettings):
         }
 
 
-class LeaveReportTrainerForm(FormSettings):
+class LeaveReportStaffForm(FormSettings):
     def __init__(self, *args, **kwargs):
-        super(LeaveReportTrainerForm, self).__init__(*args, **kwargs)
+        super(LeaveReportStaffForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = LeaveReportTrainer
+        model = LeaveReportStaff
         fields = ['date', 'message']
         widgets = {
             'date': DateInput(attrs={'type': 'date'}),
         }
 
 
-class FeedbackTrainerForm(FormSettings):
+class FeedbackStaffForm(FormSettings):
 
     def __init__(self, *args, **kwargs):
-        super(FeedbackTrainerForm, self).__init__(*args, **kwargs)
+        super(FeedbackStaffForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = FeedbackTrainer
+        model = FeedbackStaff
         fields = ['feedback']
 
 
-class LeaveReportMemberForm(FormSettings):
+class LeaveReportStudentForm(FormSettings):
     def __init__(self, *args, **kwargs):
-        super(LeaveReportMemberForm, self).__init__(*args, **kwargs)
+        super(LeaveReportStudentForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = LeaveReportMember
+        model = LeaveReportStudent
         fields = ['date', 'message']
         widgets = {
             'date': DateInput(attrs={'type': 'date'}),
         }
 
 
-class FeedbackMemberForm(FormSettings):
+class FeedbackStudentForm(FormSettings):
 
     def __init__(self, *args, **kwargs):
-        super(FeedbackMemberForm, self).__init__(*args, **kwargs)
+        super(FeedbackStudentForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = FeedbackMember
+        model = FeedbackStudent
         fields = ['feedback']
 
 
-class MemberEditForm(CustomUserForm):
+class StudentEditForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
-        super(MemberEditForm, self).__init__(*args, **kwargs)
+        super(StudentEditForm, self).__init__(*args, **kwargs)
 
     class Meta(CustomUserForm.Meta):
-        model = Member
+        model = Student
         fields = CustomUserForm.Meta.fields 
 
 
-class TrainerEditForm(CustomUserForm):
+class StaffEditForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
-        super(TrainerEditForm, self).__init__(*args, **kwargs)
+        super(StaffEditForm, self).__init__(*args, **kwargs)
 
     class Meta(CustomUserForm.Meta):
-        model = Trainer
+        model = Staff
         fields = CustomUserForm.Meta.fields
 
 
@@ -188,8 +188,8 @@ class EditResultForm(FormSettings):
         super(EditResultForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = MemberResult
-        fields = ['session_year', 'work_out_plan', 'member', 'test', 'exam']
+        model = StudentResult
+        fields = ['session_year', 'subject', 'student', 'test', 'exam']
 
 #todos
 # class TodoForm(forms.ModelForm):
@@ -199,9 +199,9 @@ class EditResultForm(FormSettings):
 
 #issue book
 
-class IssueSupplimentsForm(forms.Form):
-    price2 = forms.ModelChoiceField(queryset=models.Suppliments.objects.all(), empty_label="Suppliment Name [Price]", to_field_name="price", label="Suppliment (Name and Price)")
-    name2 = forms.ModelChoiceField(queryset=models.Member.objects.all(), empty_label="Name ", to_field_name="", label="Member Details")
+class IssueBookForm(forms.Form):
+    isbn2 = forms.ModelChoiceField(queryset=models.Book.objects.all(), empty_label="Book Name [ISBN]", to_field_name="isbn", label="Book (Name and ISBN)")
+    name2 = forms.ModelChoiceField(queryset=models.Student.objects.all(), empty_label="Name ", to_field_name="", label="Student Details")
     
-    price2.widget.attrs.update({'class': 'form-control'})
+    isbn2.widget.attrs.update({'class': 'form-control'})
     name2.widget.attrs.update({'class':'form-control'})
