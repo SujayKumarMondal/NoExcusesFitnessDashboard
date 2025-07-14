@@ -1,0 +1,219 @@
+import json
+import math
+from datetime import datetime
+
+from django.contrib import messages
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import (HttpResponseRedirect, get_object_or_404,
+                              redirect, render)
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+
+from .forms import *
+from .models import *
+
+
+def employee_home(request):
+    employee = get_object_or_404(Employee, admin=request.user)
+    total_subject = Subject.objects.filter(course=employee.course).count()
+    total_attendance = AttendanceReport.objects.filter(employee=employee).count()
+    total_present = AttendanceReport.objects.filter(employee=employee, status=True).count()
+    if total_attendance == 0:  # Don't divide. DivisionByZero
+        percent_absent = percent_present = 0
+    else:
+        percent_present = math.floor((total_present/total_attendance) * 100)
+        percent_absent = math.ceil(100 - percent_present)
+    subject_name = []
+    data_present = []
+    data_absent = []
+    subjects = Subject.objects.filter(course=employee.course)
+    for subject in subjects:
+        attendance = Attendance.objects.filter(subject=subject)
+        present_count = AttendanceReport.objects.filter(
+            attendance__in=attendance, status=True, employee=employee).count()
+        absent_count = AttendanceReport.objects.filter(
+            attendance__in=attendance, status=False, employee=employee).count()
+        subject_name.append(subject.name)
+        data_present.append(present_count)
+        data_absent.append(absent_count)
+    context = {
+        'total_attendance': total_attendance,
+        'percent_present': percent_present,
+        'percent_absent': percent_absent,
+        'total_subject': total_subject,
+        'subjects': subjects,
+        'data_present': data_present,
+        'data_absent': data_absent,
+        'data_name': subject_name,
+        'page_title': '(TeamOps--Employee Panel) - ' + str(employee.admin.first_name) + ' ' + str(employee.admin.last_name)
+
+    }
+    return render(request, 'employee_template/home_content.html', context)
+
+
+@ csrf_exempt
+def employee_view_attendance(request):
+    employee = get_object_or_404(Employee, admin=request.user)
+    if request.method != 'POST':
+        course = get_object_or_404(Course, id=employee.course.id)
+        context = {
+            'subjects': Subject.objects.filter(course=course),
+            'page_title': 'View Attendance'
+        }
+        return render(request, 'employee_template/employee_view_attendance.html', context)
+    else:
+        subject_id = request.POST.get('subject')
+        start = request.POST.get('start_date')
+        end = request.POST.get('end_date')
+        try:
+            subject = get_object_or_404(Subject, id=subject_id)
+            start_date = datetime.strptime(start, "%Y-%m-%d")
+            end_date = datetime.strptime(end, "%Y-%m-%d")
+            attendance = Attendance.objects.filter(
+                date__range=(start_date, end_date), subject=subject)
+            attendance_reports = AttendanceReport.objects.filter(
+                attendance__in=attendance, employee=employee)
+            json_data = []
+            for report in attendance_reports:
+                data = {
+                    "date":  str(report.attendance.date),
+                    "status": report.status
+                }
+                json_data.append(data)
+            return JsonResponse(json.dumps(json_data), safe=False)
+        except Exception as e:
+            return None
+
+
+def employee_apply_leave(request):
+    form = LeaveReportEmployeeForm(request.POST or None)
+    employee = get_object_or_404(Employee, admin_id=request.user.id)
+    context = {
+        'form': form,
+        'leave_history': LeaveReportEmployee.objects.filter(employee=employee),
+        'page_title': 'Apply for leave'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                obj = form.save(commit=False)
+                obj.employee = employee
+                obj.save()
+                messages.success(
+                    request, "Application for leave has been submitted for review")
+                return redirect(reverse('employee_apply_leave'))
+            except Exception:
+                messages.error(request, "Could not submit")
+        else:
+            messages.error(request, "Form has errors!")
+    return render(request, "employee_template/employee_apply_leave.html", context)
+
+
+def employee_feedback(request):
+    form = FeedbackEmployeeForm(request.POST or None)
+    employee = get_object_or_404(Employee, admin_id=request.user.id)
+    context = {
+        'form': form,
+        'feedbacks': FeedbackEmployee.objects.filter(employee=employee),
+        'page_title': 'Employee Feedback'
+
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                obj = form.save(commit=False)
+                obj.employee = employee
+                obj.save()
+                messages.success(
+                    request, "Feedback submitted for review")
+                return redirect(reverse('employee_feedback'))
+            except Exception:
+                messages.error(request, "Could not Submit!")
+        else:
+            messages.error(request, "Form has errors!")
+    return render(request, "employee_template/employee_feedback.html", context)
+
+
+def employee_view_profile(request):
+    employee = get_object_or_404(Employee, admin=request.user)
+    form = EmployeeEditForm(request.POST or None, request.FILES or None,
+                           instance=employee)
+    context = {'form': form,
+               'page_title': 'View/Edit Profile'
+               }
+    if request.method == 'POST':
+        try:
+            if form.is_valid():
+                first_name = form.cleaned_data.get('first_name')
+                last_name = form.cleaned_data.get('last_name')
+                password = form.cleaned_data.get('password') or None
+                address = form.cleaned_data.get('address')
+                gender = form.cleaned_data.get('gender')
+                passport = request.FILES.get('profile_pic') or None
+                admin = employee.admin
+                if password != None:
+                    admin.set_password(password)
+                if passport != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(passport.name, passport)
+                    passport_url = fs.url(filename)
+                    admin.profile_pic = passport_url
+                admin.first_name = first_name
+                admin.last_name = last_name
+                admin.address = address
+                admin.gender = gender
+                admin.save()
+                employee.save()
+                messages.success(request, "Profile Updated!")
+                return redirect(reverse('employee_view_profile'))
+            else:
+                messages.error(request, "Invalid Data Provided")
+        except Exception as e:
+            messages.error(request, "Error Occured While Updating Profile " + str(e))
+
+    return render(request, "employee_template/employee_view_profile.html", context)
+
+
+@csrf_exempt
+def employee_fcmtoken(request):
+    token = request.POST.get('token')
+    employee_user = get_object_or_404(CustomUser, id=request.user.id)
+    try:
+        employee_user.fcm_token = token
+        employee_user.save()
+        return HttpResponse("True")
+    except Exception as e:
+        return HttpResponse("False")
+
+
+def employee_view_notification(request):
+    employee = get_object_or_404(Employee, admin=request.user)
+    notifications = NotificationEmployee.objects.filter(employee=employee)
+    context = {
+        'notifications': notifications,
+        'page_title': "View Notifications"
+    }
+    return render(request, "employee_template/employee_view_notification.html", context)
+
+
+def employee_view_result(request):
+    employee = get_object_or_404(Employee, admin=request.user)
+    results = EmployeeResult.objects.filter(employee=employee)
+    context = {
+        'results': results,
+        'page_title': "View Results"
+    }
+    return render(request, "employee_template/employee_view_result.html", context)
+
+
+#library
+
+def view_books(request):
+    books = Book.objects.all()
+    context = {
+        'books': books,
+        'page_title': "Library"
+    }
+    return render(request, "employee_template/view_books.html", context)
+

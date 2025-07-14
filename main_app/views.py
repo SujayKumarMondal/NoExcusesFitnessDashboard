@@ -17,9 +17,9 @@ def login_page(request):
         if request.user.user_type == '1':
             return redirect(reverse("admin_home"))
         elif request.user.user_type == '2':
-            return redirect(reverse("staff_home"))
+            return redirect(reverse("hr_home"))
         else:
-            return redirect(reverse("student_home"))
+            return redirect(reverse("employee_home"))
     return render(request, 'main_app/login.html')
 
 
@@ -75,9 +75,9 @@ def doLogin(request, **kwargs):
             if user.user_type == '1':
                 return redirect(reverse("admin_home"))
             elif user.user_type == '2':
-                return redirect(reverse("staff_home"))
+                return redirect(reverse("hr_home"))
             else:
-                return redirect(reverse("student_home"))
+                return redirect(reverse("employee_home"))
         else:
             messages.error(request, "Invalid login details. Please try again.")
             return redirect('/')

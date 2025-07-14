@@ -56,12 +56,12 @@ class CustomUserForm(FormSettings):
         fields = ['first_name', 'last_name', 'email', 'gender',  'password','profile_pic', 'address' ]
 
 
-class StudentForm(CustomUserForm):
+class EmployeeForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
-        super(StudentForm, self).__init__(*args, **kwargs)
+        super(EmployeeForm, self).__init__(*args, **kwargs)
 
     class Meta(CustomUserForm.Meta):
-        model = Student
+        model = Employee
         fields = CustomUserForm.Meta.fields + \
             ['course', 'session']
 
@@ -75,12 +75,12 @@ class AdminForm(CustomUserForm):
         fields = CustomUserForm.Meta.fields
 
 
-class StaffForm(CustomUserForm):
+class HRForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
-        super(StaffForm, self).__init__(*args, **kwargs)
+        super(HRForm, self).__init__(*args, **kwargs)
 
     class Meta(CustomUserForm.Meta):
-        model = Staff
+        model = HR
         fields = CustomUserForm.Meta.fields + \
             ['course' ]
 
@@ -101,7 +101,7 @@ class SubjectForm(FormSettings):
 
     class Meta:
         model = Subject
-        fields = ['name', 'staff', 'course']
+        fields = ['name', 'hr', 'course']
 
 
 class SessionForm(FormSettings):
@@ -117,65 +117,65 @@ class SessionForm(FormSettings):
         }
 
 
-class LeaveReportStaffForm(FormSettings):
+class LeaveReportHRForm(FormSettings):
     def __init__(self, *args, **kwargs):
-        super(LeaveReportStaffForm, self).__init__(*args, **kwargs)
+        super(LeaveReportHRForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = LeaveReportStaff
+        model = LeaveReportHR
         fields = ['date', 'message']
         widgets = {
             'date': DateInput(attrs={'type': 'date'}),
         }
 
 
-class FeedbackStaffForm(FormSettings):
+class FeedbackHRForm(FormSettings):
 
     def __init__(self, *args, **kwargs):
-        super(FeedbackStaffForm, self).__init__(*args, **kwargs)
+        super(FeedbackHRForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = FeedbackStaff
+        model = FeedbackHR
         fields = ['feedback']
 
 
-class LeaveReportStudentForm(FormSettings):
+class LeaveReportEmployeeForm(FormSettings):
     def __init__(self, *args, **kwargs):
-        super(LeaveReportStudentForm, self).__init__(*args, **kwargs)
+        super(LeaveReportEmployeeForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = LeaveReportStudent
+        model = LeaveReportEmployee
         fields = ['date', 'message']
         widgets = {
             'date': DateInput(attrs={'type': 'date'}),
         }
 
 
-class FeedbackStudentForm(FormSettings):
+class FeedbackEmployeeForm(FormSettings):
 
     def __init__(self, *args, **kwargs):
-        super(FeedbackStudentForm, self).__init__(*args, **kwargs)
+        super(FeedbackEmployeeForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = FeedbackStudent
+        model = FeedbackEmployee
         fields = ['feedback']
 
 
-class StudentEditForm(CustomUserForm):
+class EmployeeEditForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
-        super(StudentEditForm, self).__init__(*args, **kwargs)
+        super(EmployeeEditForm, self).__init__(*args, **kwargs)
 
     class Meta(CustomUserForm.Meta):
-        model = Student
+        model = Employee
         fields = CustomUserForm.Meta.fields 
 
 
-class StaffEditForm(CustomUserForm):
+class HREditForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
-        super(StaffEditForm, self).__init__(*args, **kwargs)
+        super(HREditForm, self).__init__(*args, **kwargs)
 
     class Meta(CustomUserForm.Meta):
-        model = Staff
+        model = HR
         fields = CustomUserForm.Meta.fields
 
 
@@ -188,8 +188,8 @@ class EditResultForm(FormSettings):
         super(EditResultForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = StudentResult
-        fields = ['session_year', 'subject', 'student', 'test', 'exam']
+        model = EmployeeResult
+        fields = ['session_year', 'subject', 'employee', 'test', 'exam']
 
 #todos
 # class TodoForm(forms.ModelForm):
@@ -201,7 +201,7 @@ class EditResultForm(FormSettings):
 
 class IssueBookForm(forms.Form):
     isbn2 = forms.ModelChoiceField(queryset=models.Book.objects.all(), empty_label="Book Name [ISBN]", to_field_name="isbn", label="Book (Name and ISBN)")
-    name2 = forms.ModelChoiceField(queryset=models.Student.objects.all(), empty_label="Name ", to_field_name="", label="Student Details")
+    name2 = forms.ModelChoiceField(queryset=models.Employee.objects.all(), empty_label="Name ", to_field_name="", label="Employee Details")
     
     isbn2.widget.attrs.update({'class': 'form-control'})
     name2.widget.attrs.update({'class':'form-control'})
