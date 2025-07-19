@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from .EmailBackend import EmailBackend
-from .models import Attendance, Session, Subject 
+from .models import Attendance, Session, Project 
 
 # Create your views here.
 
@@ -17,9 +17,9 @@ def login_page(request):
         if request.user.user_type == '1':
             return redirect(reverse("admin_home"))
         elif request.user.user_type == '2':
-            return redirect(reverse("staff_home"))
+            return redirect(reverse("hr_home"))
         else:
-            return redirect(reverse("student_home"))
+            return redirect(reverse("employee_home"))
     return render(request, 'main_app/login.html')
 
 
@@ -75,9 +75,9 @@ def doLogin(request, **kwargs):
             if user.user_type == '1':
                 return redirect(reverse("admin_home"))
             elif user.user_type == '2':
-                return redirect(reverse("staff_home"))
+                return redirect(reverse("hr_home"))
             else:
-                return redirect(reverse("student_home"))
+                return redirect(reverse("employee_home"))
         else:
             messages.error(request, "Invalid login details. Please try again.")
             return redirect('/')
@@ -92,12 +92,12 @@ def logout_user(request):
 
 @csrf_exempt
 def get_attendance(request):
-    subject_id = request.POST.get('subject')
+    project_id = request.POST.get('project')
     session_id = request.POST.get('session')
     try:
-        subject = get_object_or_404(Subject, id=subject_id)
+        project = get_object_or_404(Project, id=project_id)
         session = get_object_or_404(Session, id=session_id)
-        attendance = Attendance.objects.filter(subject=subject, session=session)
+        attendance = Attendance.objects.filter(project=project, session=session)
         attendance_list = []
         for attd in attendance:
             data = {
