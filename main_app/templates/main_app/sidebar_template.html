@@ -43,10 +43,10 @@
                 {% if request.user.user_type == '1' %}
                 <!-- Admin Menu -->
                 <li class="nav-item"><a href="{% url 'admin_view_profile' %}" class="nav-link {% if request.path == admin_view_profile %}active{% endif %}"><i class="nav-icon fas fa-address-card"></i><p>Update Profile</p></a></li>
-                <li class="nav-item"><a href="{% url 'add_course' %}" class="nav-link {% if request.path == add_course %}active{% endif %}"><i class="nav-icon fas fa-book"></i><p>Add Course</p></a></li>
-                <li class="nav-item"><a href="{% url 'manage_course' %}" class="nav-link {% if request.path == manage_course %}active{% endif %}"><i class="nav-icon fas fa-cogs"></i><p>Manage Course</p></a></li>
-                <li class="nav-item"><a href="{% url 'add_subject' %}" class="nav-link {% if request.path == add_subject %}active{% endif %}"><i class="nav-icon fas fa-layer-group"></i><p>Add Subject</p></a></li>
-                <li class="nav-item"><a href="{% url 'manage_subject' %}" class="nav-link {% if request.path == manage_subject %}active{% endif %}"><i class="nav-icon fas fa-stream"></i><p>Manage Subject</p></a></li>
+                <li class="nav-item"><a href="{% url 'add_designation' %}" class="nav-link {% if request.path == add_designation %}active{% endif %}"><i class="nav-icon fas fa-book"></i><p>Add Designation</p></a></li>
+                <li class="nav-item"><a href="{% url 'manage_designation' %}" class="nav-link {% if request.path == manage_designation %}active{% endif %}"><i class="nav-icon fas fa-cogs"></i><p>Manage Designation</p></a></li>
+                <li class="nav-item"><a href="{% url 'add_project' %}" class="nav-link {% if request.path == add_project %}active{% endif %}"><i class="nav-icon fas fa-layer-group"></i><p>Add Project</p></a></li>
+                <li class="nav-item"><a href="{% url 'manage_project' %}" class="nav-link {% if request.path == manage_project %}active{% endif %}"><i class="nav-icon fas fa-stream"></i><p>Manage Project</p></a></li>
                 <li class="nav-item"><a href="{% url 'add_session' %}" class="nav-link {% if request.path == add_session %}active{% endif %}"><i class="nav-icon fas fa-clock"></i><p>Add Session</p></a></li>
                 <li class="nav-item"><a href="{% url 'manage_session' %}" class="nav-link {% if request.path == manage_session %}active{% endif %}"><i class="nav-icon fas fa-history"></i><p>Manage Session</p></a></li>
                 <li class="nav-item"><a href="{% url 'add_hr' %}" class="nav-link {% if request.path == add_hr %}active{% endif %}"><i class="nav-icon fas fa-user-plus"></i><p>Add HR</p></a></li>

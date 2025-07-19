@@ -28,7 +28,7 @@
                     <div class="inner">
                         <h3>{{total_hr}}</h3>
 
-                        <p>Total HR</p>
+                        <p>Total HRs</p>
                     </div>
                     <div class="icon">
                       <i class="nav-icon fas fa-users"></i>
@@ -41,14 +41,14 @@
                 <!-- small box -->
                 <div class="small-box bg-purple">
                     <div class="inner">
-                        <h3>{{total_course}}</h3>
+                        <h3>{{total_designation}}</h3>
 
-                        <p>Total Course</p>
+                        <p>Total Designations</p>
                     </div>
                     <div class="icon">
                       <i class="nav-icon fas fa-th-list"></i>
                     </div>
-                    <a href="{% url 'manage_course' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{% url 'manage_designation' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -56,14 +56,14 @@
                 <!-- small box -->
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>{{total_subject}}</h3>
+                        <h3>{{total_project}}</h3>
 
-                        <p>Total Subjects</p>
+                        <p>Total Projects</p>
                     </div>
                     <div class="icon">
                       <i class="nav-icon fas fa-book"></i>
                     </div>
-                    <a href="{% url 'manage_subject' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{% url 'manage_project' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -93,7 +93,7 @@
                 <div class="col-md-6">
                     <div class="card card-dark">
               <div class="card-header">
-                <h3 class="card-title">Attendance Per Subject</h3>
+                <h3 class="card-title">Attendance Per Project</h3>
 
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
@@ -148,7 +148,7 @@
             <!-- PIE CHART -->
             <div class="card card-dark">
               <div class="card-header">
-                <h3 class="card-title">Total Employees in Each Course</h3>
+                <h3 class="card-title">Total Employees in Each Designation</h3>
 
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
@@ -167,7 +167,7 @@
             <!-- PIE CHART -->
             <div class="card card-dark">
               <div class="card-header">
-                <h3 class="card-title">Total Employees in Each Subject</h3>
+                <h3 class="card-title">Total Employees in Each Project</h3>
 
                 <div class="card-tools">
                   <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
@@ -212,14 +212,14 @@
           options: pieOptions      
         });
 
-        var subject_list = {{ subject_list|safe|escape }};
+        var project_list = {{ project_list|safe|escape }};
         var attendance_list = {{ attendance_list }};
   
             var barChartData = {
-      labels  : subject_list,
+      labels  : project_list,
       datasets: [
       {
-        label               : 'Attendance Per Subject',
+        label               : 'Attendance Per Project',
         backgroundColor     : '#17A2B8',
         borderColor         : 'rgba(60,141,188,0.8)',
         pointRadius          : false,
@@ -258,14 +258,14 @@
         })
        
 
-      // Total Employees in Each Subject
-      var employee_count_list_in_subject = {{ employee_count_list_in_subject }}
-      var subject_list = {{ subject_list|safe }}
+      // Total Employees in Each Project
+      var employee_count_list_in_project = {{ employee_count_list_in_project }}
+      var project_list = {{ project_list|safe }}
       var pieData3 = {
-        labels: subject_list,
+        labels: project_list,
         datasets: [
           {
-            data: employee_count_list_in_subject,
+            data: employee_count_list_in_project,
             backgroundColor : ['#8f251f', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#894e9c', '#0b523a', '#a1156d', '#9e4603'],
           }
         ]
@@ -344,15 +344,15 @@
       })
       
 
-      // Total Employees in Each Course
+      // Total Employees in Each designation
       //var donutChartCanvas = $('#pieChart2').get(0).getContext('2d')
-      var course_name_list = {{ course_name_list|safe }}
-      var employee_count_list_in_course = {{ employee_count_list_in_course }}
+      var designation_name_list = {{ designation_name_list|safe }}
+      var employee_count_list_in_designation = {{ employee_count_list_in_designation }}
       var pieData2 = {
-        labels: course_name_list,
+        labels: designation_name_list,
         datasets: [
           {
-            data: employee_count_list_in_course,
+            data: employee_count_list_in_designation,
             backgroundColor : ['#cc0404', '#00a65a', '#f39c12', '#00A4BD', '#045c8f', '#894e9c', '#9e4603', '#71bfb2'],
           }
         ]

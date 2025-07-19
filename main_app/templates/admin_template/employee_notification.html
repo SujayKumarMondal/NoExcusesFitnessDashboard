@@ -21,7 +21,7 @@
                                     <th>Full Name</th>
                                     <th>Email</th>
                                     <th>Gender</th>
-                                    <th>Course</th>
+                                    <th>Designation</th>
                                     <th>Avatar</th>
                                     <th>Action</th>
                                 </tr>
@@ -33,7 +33,7 @@
                                     <td>{{employee.last_name}}, {{employee.first_name}}</td>
                                     <td>{{employee.email}}</td>
                                     <td>{{employee.gender}}</td>
-                                    <td>{{employee.employee.course.name}}</td>
+                                    <td>{{employee.employee.designation.name}}</td>
                                     <td>
                                         {% if employee.profile_pic == ""  %}
                                         No Image

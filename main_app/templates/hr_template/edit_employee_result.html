@@ -46,7 +46,7 @@
 {% block custom_js %}
 <script>
     $(document).ready(function () {
-        $("#id_subject").change(function () {
+        $("#id_project").change(function () {
             fetchEmployees();
             });
             $("#id_session_year").change(function () {
@@ -61,17 +61,17 @@
                 $('label[for="id_test"]').hide();
                 $('label[for="id_exam"]').hide();
         function fetchEmployees(){
-            var subject = $("#id_subject").val()
+            var project = $("#id_project").val()
             var session = $("#id_session_year").val()
             $("#id_employee").html(null)
-            if (session.length  == 0 || subject.length == 0 || session < 1 || subject < 1){
+            if (session.length  == 0 || project.length == 0 || session < 1 || project < 1){
                 return false;
             }
             $.ajax({
                 url: "{% url 'get_employees' %}",
                 type: 'POST',
                 data: {
-                    subject: subject,
+                    project: project,
                     session:session
                 }
             }).done(function (response) {
@@ -94,7 +94,7 @@
 
                function fetch_employee_result(){
                 var employee = $("#id_employee").val()
-                var subject = $("#id_subject").val()
+                var project = $("#id_project").val()
                 $("#id_test").val(null)
                 $("#id_exam").val(null)
                 $("#id_exam").hide()
@@ -102,14 +102,14 @@
                 $("#id_test").hide()
                 $('label[for="id_test"]').hide();
                 $('label[for="id_exam"]').hide();
-                if (employee.length  == 0 || subject.length == 0 || employee < 1 || subject < 1){
+                if (employee.length  == 0 || project.length == 0 || employee < 1 || project < 1){
                     return false;
                 }
                 $.ajax({
                     url: "{% url 'fetch_employee_result' %}",
                     type: 'POST',
                     data: {
-                        subject: subject,
+                        project: project,
                         employee:employee
                     }
                 }).done(function (response) {

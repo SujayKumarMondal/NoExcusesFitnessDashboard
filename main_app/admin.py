@@ -11,10 +11,10 @@ class UserModel(UserAdmin):
 admin.site.register(CustomUser, UserModel)
 admin.site.register(HR)
 admin.site.register(Employee)
-admin.site.register(Course)
+admin.site.register(Designation)
 admin.site.register(Book)
 admin.site.register(IssuedBook)
 admin.site.register(Library)
-admin.site.register(Subject)
+admin.site.register(Project)
 admin.site.register(Session)
 

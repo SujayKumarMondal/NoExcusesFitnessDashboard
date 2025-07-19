@@ -17,39 +17,39 @@ from .models import *
 def admin_home(request):
     total_hr = HR.objects.all().count()
     total_employees = Employee.objects.all().count()
-    subjects = Subject.objects.all()
-    total_subject = subjects.count()
-    total_course = Course.objects.all().count()
-    attendance_list = Attendance.objects.filter(subject__in=subjects)
+    projects = Project.objects.all()
+    total_project = projects.count()
+    total_designation = Designation.objects.all().count()
+    attendance_list = Attendance.objects.filter(project__in=projects)
     total_attendance = attendance_list.count()
     attendance_list = []
-    subject_list = []
-    for subject in subjects:
-        attendance_count = Attendance.objects.filter(subject=subject).count()
-        subject_list.append(subject.name[:7])
+    project_list = []
+    for project in projects:
+        attendance_count = Attendance.objects.filter(project=project).count()
+        project_list.append(project.name[:7])
         attendance_list.append(attendance_count)
 
-    # Total Subjects and employees in Each Course
-    course_all = Course.objects.all()
-    course_name_list = []
-    subject_count_list = []
-    employee_count_list_in_course = []
+    # Total projects and employees in Each designation
+    designation_all = Designation.objects.all()
+    designation_name_list = []
+    project_count_list = []
+    employee_count_list_in_designation = []
 
-    for course in course_all:
-        subjects = Subject.objects.filter(course_id=course.id).count()
-        employees = Employee.objects.filter(course_id=course.id).count()
-        course_name_list.append(course.name)
-        subject_count_list.append(subjects)
-        employee_count_list_in_course.append(employees)
+    for designation in designation_all:
+        projects = Project.objects.filter(designation_id=designation.id).count()
+        employees = Employee.objects.filter(designation_id=designation.id).count()
+        designation_name_list.append(designation.name)
+        project_count_list.append(projects)
+        employee_count_list_in_designation.append(employees)
     
-    subject_all = Subject.objects.all()
-    subject_list = []
-    employee_count_list_in_subject = []
-    for subject in subject_all:
-        course = Course.objects.get(id=subject.course.id)
-        employee_count = Employee.objects.filter(course_id=course.id).count()
-        subject_list.append(subject.name)
-        employee_count_list_in_subject.append(employee_count)
+    project_all = Project.objects.all()
+    project_list = []
+    employee_count_list_in_project = []
+    for project in project_all:
+        designation = Designation.objects.get(id=project.designation.id)
+        employee_count = Employee.objects.filter(designation_id=designation.id).count()
+        project_list.append(project.name)
+        employee_count_list_in_project.append(employee_count)
 
 
     # For Employees
@@ -71,16 +71,16 @@ def admin_home(request):
         'page_title': "TeamOps(Administrative Dashboard)",
         'total_employees': total_employees,
         'total_hr': total_hr,
-        'total_course': total_course,
-        'total_subject': total_subject,
-        'subject_list': subject_list,
+        'total_designation': total_designation,
+        'total_project': total_project,
+        'project_list': project_list,
         'attendance_list': attendance_list,
         'employee_attendance_present_list': employee_attendance_present_list,
         'employee_attendance_leave_list': employee_attendance_leave_list,
         "employee_name_list": employee_name_list,
-        "employee_count_list_in_subject": employee_count_list_in_subject,
-        "employee_count_list_in_course": employee_count_list_in_course,
-        "course_name_list": course_name_list,
+        "employee_count_list_in_project": employee_count_list_in_project,
+        "employee_count_list_in_designation": employee_count_list_in_designation,
+        "designation_name_list": designation_name_list,
 
     }
     return render(request, 'admin_template/home_content.html', context)
@@ -97,7 +97,7 @@ def add_hr(request):
             email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
             password = form.cleaned_data.get('password')
-            course = form.cleaned_data.get('course')
+            designation = form.cleaned_data.get('designation')
             passport = request.FILES.get('profile_pic')
             fs = FileSystemStorage()
             filename = fs.save(passport.name, passport)
@@ -107,7 +107,7 @@ def add_hr(request):
                     email=email, password=password, user_type=2, first_name=first_name, last_name=last_name, profile_pic=passport_url)
                 user.gender = gender
                 user.address = address
-                user.hr.course = course
+                user.hr.designation = designation
                 user.save()
                 messages.success(request, "Successfully Added")
                 return redirect(reverse('add_hr'))
@@ -131,7 +131,7 @@ def add_employee(request):
             email = employee_form.cleaned_data.get('email')
             gender = employee_form.cleaned_data.get('gender')
             password = employee_form.cleaned_data.get('password')
-            course = employee_form.cleaned_data.get('course')
+            designation = employee_form.cleaned_data.get('designation')
             session = employee_form.cleaned_data.get('session')
             passport = request.FILES['profile_pic']
             fs = FileSystemStorage()
@@ -143,7 +143,7 @@ def add_employee(request):
                 user.gender = gender
                 user.address = address
                 user.employee.session = session
-                user.employee.course = course
+                user.employee.designation = designation
                 user.save()
                 messages.success(request, "Successfully Added")
                 return redirect(reverse('add_employee'))
@@ -154,54 +154,54 @@ def add_employee(request):
     return render(request, 'admin_template/add_employee_template.html', context)
 
 
-def add_course(request):
-    form = CourseForm(request.POST or None)
+def add_designation(request):
+    form = DesignationForm(request.POST or None)
     context = {
         'form': form,
-        'page_title': 'Add Course'
+        'page_title': 'Add Designation'
     }
     if request.method == 'POST':
         if form.is_valid():
             name = form.cleaned_data.get('name')
             try:
-                course = Course()
-                course.name = name
-                course.save()
+                designation = Designation()
+                designation.name = name
+                designation.save()
                 messages.success(request, "Successfully Added")
-                return redirect(reverse('add_course'))
+                return redirect(reverse('add_designation'))
             except:
                 messages.error(request, "Could Not Add")
         else:
             messages.error(request, "Could Not Add")
-    return render(request, 'admin_template/add_course_template.html', context)
+    return render(request, 'admin_template/add_designation_template.html', context)
 
 
-def add_subject(request):
-    form = SubjectForm(request.POST or None)
+def add_project(request):
+    form = ProjectForm(request.POST or None)
     context = {
         'form': form,
-        'page_title': 'Add Subject'
+        'page_title': 'Add project'
     }
     if request.method == 'POST':
         if form.is_valid():
             name = form.cleaned_data.get('name')
-            course = form.cleaned_data.get('course')
+            designation = form.cleaned_data.get('designation')
             hr = form.cleaned_data.get('hr')
             try:
-                subject = Subject()
-                subject.name = name
-                subject.hr = hr
-                subject.course = course
-                subject.save()
+                project = Project()
+                project.name = name
+                project.hr = hr
+                project.designation = designation
+                project.save()
                 messages.success(request, "Successfully Added")
-                return redirect(reverse('add_subject'))
+                return redirect(reverse('add_project'))
 
             except Exception as e:
                 messages.error(request, "Could Not Add " + str(e))
         else:
             messages.error(request, "Fill Form Properly")
 
-    return render(request, 'admin_template/add_subject_template.html', context)
+    return render(request, 'admin_template/add_project_template.html', context)
 
 
 def manage_hr(request):
@@ -222,22 +222,22 @@ def manage_employee(request):
     return render(request, "admin_template/manage_employee.html", context)
 
 
-def manage_course(request):
-    courses = Course.objects.all()
+def manage_designation(request):
+    designations = Designation.objects.all()
     context = {
-        'courses': courses,
-        'page_title': 'Manage Courses'
+        'designations': designations,
+        'page_title': 'Manage designations'
     }
-    return render(request, "admin_template/manage_course.html", context)
+    return render(request, "admin_template/manage_designation.html", context)
 
 
-def manage_subject(request):
-    subjects = Subject.objects.all()
+def manage_project(request):
+    projects = Project.objects.all()
     context = {
-        'subjects': subjects,
-        'page_title': 'Manage Subjects'
+        'projects': projects,
+        'page_title': 'Manage projects'
     }
-    return render(request, "admin_template/manage_subject.html", context)
+    return render(request, "admin_template/manage_project.html", context)
 
 
 def edit_hr(request, hr_id):
@@ -257,7 +257,7 @@ def edit_hr(request, hr_id):
             email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
             password = form.cleaned_data.get('password') or None
-            course = form.cleaned_data.get('course')
+            designation = form.cleaned_data.get('designation')
             passport = request.FILES.get('profile_pic') or None
             try:
                 user = CustomUser.objects.get(id=hr.admin.id)
@@ -274,7 +274,7 @@ def edit_hr(request, hr_id):
                 user.last_name = last_name
                 user.gender = gender
                 user.address = address
-                hr.course = course
+                hr.designation = designation
                 user.save()
                 hr.save()
                 messages.success(request, "Successfully Updated")
@@ -306,7 +306,7 @@ def edit_employee(request, employee_id):
             email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
             password = form.cleaned_data.get('password') or None
-            course = form.cleaned_data.get('course')
+            designation = form.cleaned_data.get('designation')
             session = form.cleaned_data.get('session')
             passport = request.FILES.get('profile_pic') or None
             try:
@@ -325,7 +325,7 @@ def edit_employee(request, employee_id):
                 employee.session = session
                 user.gender = gender
                 user.address = address
-                employee.course = course
+                employee.designation = designation
                 user.save()
                 employee.save()
                 messages.success(request, "Successfully Updated")
@@ -338,56 +338,56 @@ def edit_employee(request, employee_id):
         return render(request, "admin_template/edit_employee_template.html", context)
 
 
-def edit_course(request, course_id):
-    instance = get_object_or_404(Course, id=course_id)
-    form = CourseForm(request.POST or None, instance=instance)
+def edit_designation(request, designation_id):
+    instance = get_object_or_404(Designation, id=designation_id)
+    form = DesignationForm(request.POST or None, instance=instance)
     context = {
         'form': form,
-        'course_id': course_id,
-        'page_title': 'Edit Course'
+        'designation_id': designation_id,
+        'page_title': 'Edit designation'
     }
     if request.method == 'POST':
         if form.is_valid():
             name = form.cleaned_data.get('name')
             try:
-                course = Course.objects.get(id=course_id)
-                course.name = name
-                course.save()
+                designation = Designation.objects.get(id=designation_id)
+                designation.name = name
+                designation.save()
                 messages.success(request, "Successfully Updated")
             except:
                 messages.error(request, "Could Not Update")
         else:
             messages.error(request, "Could Not Update")
 
-    return render(request, 'admin_template/edit_course_template.html', context)
+    return render(request, 'admin_template/edit_designation_template.html', context)
 
 
-def edit_subject(request, subject_id):
-    instance = get_object_or_404(Subject, id=subject_id)
-    form = SubjectForm(request.POST or None, instance=instance)
+def edit_project(request, project_id):
+    instance = get_object_or_404(Project, id=project_id)
+    form = ProjectForm(request.POST or None, instance=instance)
     context = {
         'form': form,
-        'subject_id': subject_id,
-        'page_title': 'Edit Subject'
+        'project_id': project_id,
+        'page_title': 'Edit project'
     }
     if request.method == 'POST':
         if form.is_valid():
             name = form.cleaned_data.get('name')
-            course = form.cleaned_data.get('course')
+            designation = form.cleaned_data.get('designation')
             hr = form.cleaned_data.get('hr')
             try:
-                subject = Subject.objects.get(id=subject_id)
-                subject.name = name
-                subject.hr = hr
-                subject.course = course
-                subject.save()
+                project = Project.objects.get(id=project_id)
+                project.name = name
+                project.hr = hr
+                project.designation = designation
+                project.save()
                 messages.success(request, "Successfully Updated")
-                return redirect(reverse('edit_subject', args=[subject_id]))
+                return redirect(reverse('edit_project', args=[project_id]))
             except Exception as e:
                 messages.error(request, "Could Not Add " + str(e))
         else:
             messages.error(request, "Fill Form Properly")
-    return render(request, 'admin_template/edit_subject_template.html', context)
+    return render(request, 'admin_template/edit_project_template.html', context)
 
 
 def add_session(request):
@@ -540,10 +540,10 @@ def view_employee_leave(request):
 
 
 def admin_view_attendance(request):
-    subjects = Subject.objects.all()
+    projects = Project.objects.all()
     sessions = Session.objects.all()
     context = {
-        'subjects': subjects,
+        'projects': projects,
         'sessions': sessions,
         'page_title': 'View Attendance'
     }
@@ -553,11 +553,11 @@ def admin_view_attendance(request):
 
 @csrf_exempt
 def get_admin_attendance(request):
-    subject_id = request.POST.get('subject')
+    project_id = request.POST.get('project')
     session_id = request.POST.get('session')
     attendance_date_id = request.POST.get('attendance_date_id')
     try:
-        subject = get_object_or_404(Subject, id=subject_id)
+        project = get_object_or_404(Project, id=project_id)
         session = get_object_or_404(Session, id=session_id)
         attendance = get_object_or_404(
             Attendance, id=attendance_date_id, session=session)
@@ -696,22 +696,22 @@ def delete_employee(request, employee_id):
     return redirect(reverse('manage_employee'))
 
 
-def delete_course(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
+def delete_designation(request, designation_id):
+    designation = get_object_or_404(Designation, id=designation_id)
     try:
-        course.delete()
-        messages.success(request, "Course deleted successfully!")
+        designation.delete()
+        messages.success(request, "designation deleted successfully!")
     except Exception:
         messages.error(
-            request, "Sorry, some employees are assigned to this course already. Kindly change the affected employee course and try again")
-    return redirect(reverse('manage_course'))
+            request, "Sorry, some employees are assigned to this designation already. Kindly change the affected employee designation and try again")
+    return redirect(reverse('manage_designation'))
 
 
-def delete_subject(request, subject_id):
-    subject = get_object_or_404(Subject, id=subject_id)
-    subject.delete()
-    messages.success(request, "Subject deleted successfully!")
-    return redirect(reverse('manage_subject'))
+def delete_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    project.delete()
+    messages.success(request, "Project deleted successfully!")
+    return redirect(reverse('manage_project'))
 
 
 def delete_session(request, session_id):

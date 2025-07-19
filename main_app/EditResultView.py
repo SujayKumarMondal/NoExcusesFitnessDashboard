@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
 from django.contrib import messages
-from .models import Subject, HR, Employee, EmployeeResult
+from .models import Project, HR, Employee, EmployeeResult
 from .forms import EditResultForm
 from django.urls import reverse
 
@@ -10,7 +10,7 @@ class EditResultView(View):
     def get(self, request, *args, **kwargs):
         resultForm = EditResultForm()
         hr = get_object_or_404(HR, admin=request.user)
-        resultForm.fields['subject'].queryset = Subject.objects.filter(hr=hr)
+        resultForm.fields['project'].queryset = Project.objects.filter(hr=hr)
         context = {
             'form': resultForm,
             'page_title': "Edit Employee's Result"
@@ -23,11 +23,11 @@ class EditResultView(View):
         if form.is_valid():
             try:
                 employee = form.cleaned_data.get('employee')
-                subject = form.cleaned_data.get('subject')
+                project = form.cleaned_data.get('project')
                 test = form.cleaned_data.get('test')
                 exam = form.cleaned_data.get('exam')
                 # Validating
-                result = EmployeeResult.objects.get(employee=employee, subject=subject)
+                result = EmployeeResult.objects.get(employee=employee, project=project)
                 result.exam = exam
                 result.test = test
                 result.save()

@@ -1,204 +1,168 @@
-![Homepage Screenshot](main_app/static/image/login_ss.png)
-![Admin Page Screenshot](main_app/static/image/admin_ss.png)
-![Staff Page Screenshot](main_app/static/image/staff_ss.png)
-![Student Page Screenshot](main_app/static/image/student_ss.png)
+# 🏢 Office Management System
 
-## Features of this Project
+A comprehensive web-based Office Management System built with **Django**. It includes role-based dashboards for Admin, HR, and Employees, and allows management of designations, work modes, assets, projects, attendance, feedback, leaves, and more.
 
+## 🔥 Screenshots
 
-### A. Admin Users Can
-1. See Overall Summary Charts of Students Performances, Staff Performances, Courses, Subjects, Leave, etc.
-2. Manage Staff (Add, Update and Delete)
-3. Manage Students (Add, Update and Delete)
-4. Manage Course (Add, Update and Delete)
-5. Manage Subjects (Add, Update and Delete)
-6. Manage Sessions (Add, Update and Delete)
-7. View Student Attendance
-8. Review and Reply Student/Staff Feedback
-9. Review (Approve/Reject) Student/Staff Leave
+![Login Page](main_app/static/image/login_ss.png)
+![Admin Dashboard](main_app/static/image/admin_ss.png)
+![HR Dashboard](main_app/static/image/hr_ss.png)
+![Employee Dashboard](main_app/static/image/employee_ss.png)
 
-### B. Staff/Teachers Can
-1. See the Overall Summary Charts related to their students, their subjects, leave status, etc.
-2. Take/Update Students Attendance
-3. Add/Update Result
-4. Apply for Leave
-5. Send Feedback to HOD
+---
 
-### C. Students Can
-1. See the Overall Summary Charts related to their attendance, their subjects, leave status, etc.
-2. View Attendance
-3. View Result
-4. Apply for Leave
-5. Send Feedback to HOD
+## 🚀 Features
 
-## Repository 
-1. https://github.com/SujayKumarMondal/OnlineEduPortal
+### 🔐 Admin Can:
 
-## Support Developer
-1. Add a Star 🌟  to this 👆 Repository
-2. Follow on Github & LinkedIn 
+1. View overall summary charts for employees, projects, leaves, etc.
+2. Manage HRs (Add, Edit, Delete)
+3. Manage Employees (Add, Edit, Delete)
+4. Manage Designations
+5. Manage Projects allocation
+6. View All Attendance Reports
+7. Approve/Reject Leave Applications
+8. Review Feedback from HRs and Employees
+9. Send Notifications to HRs and Employees
+10. Edit Admin Profile
 
+---
 
-## How to Install and Run this project?
+### 👨‍💼 HR Can:
 
-### Pre-Requisites:
-1. Install Git Version Control
-[ https://git-scm.com/ ]
+1. View summary charts for assigned employees and projects
+2. Manage Employee Attendance
+3. Apply for Leave
+4. Send Feedback to Admin
+5. Receive Notifications
+6. Edit HR Profile
 
-2. Install Python Latest Version
-[ https://www.python.org/downloads/ ]
+---
 
-3. Install Pip (Package Manager)
-[ https://pip.pypa.io/en/stable/installing/ ]
+### 👷 Employee Can:
 
-*Alternative to Pip is Homebrew*
+1. View assigned projects, leave status, and attendance reports
+2. Apply for Leave
+3. Send Feedback to HR/Admin
+4. Receive Notifications
+5. View Book Issues
+6. Edit Employee Profile
 
-### Installation
-**1. Create a Folder where you want to save the project**
+---
 
-**2. Create a Virtual Environment and Activate**
+## 🧰 Tech Stack
 
-If you have conda installed in your system
-```
-$  conda env create -f college-erp.yml
-```
+* Django (Backend)
+* HTML5, CSS3, JavaScript (Frontend)
+* SQLite (Default DB – can be replaced)
+* Bootstrap 4/5 for styling
+* Chart.js for dashboard visualizations
 
-Activate created conda environment
-```
-$  conda activate Django-env
-```
+---
 
-Else Install Virtual Environment First
-```
-$  pip install virtualenv
-```
+## 📂 Repository
 
-Create Virtual Environment
+🔗 [GitHub Repository](https://github.com/SujayKumarMondal/TeamOps)
 
-For Windows
-```
-$  python -m venv venv
-```
-For Mac
-```
-$  python3 -m venv venv
-```
-For Linux
-```
-$  virtualenv .
+---
+
+## 🛠 Installation & Setup Guide
+
+### ✅ Prerequisites
+
+* Python 3.8+
+* pip
+* Git
+* Virtualenv (optional but recommended)
+
+---
+
+### 📦 Steps to Install
+
+#### 1. Clone the Repository
+
+```bash
+git clone https://github.com/SujayKumarMondal/TeamOps.git
 ```
 
-Activate Virtual Environment
+#### 2. Create & Activate Virtual Environment (Recommended)
 
-For Windows
-```
-$  source venv/scripts/activate
-```
+**Windows:**
 
-For Mac
-```
-$  source venv/bin/activate
+```bash
+python -m venv venv
+venv\Scripts\activate
 ```
 
-For Linux
-```
-$  source bin/activate
-```
+**Linux/macOS:**
 
-**3. Clone this project**
-```
-$  git clone https://github.com/SujayKumarMondal/OnlineEduPortal
+```bash
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-Then, Enter the project
-```
-$  cd College-ERP
-```
+#### 3. Install Required Packages
 
-**4. Install Requirements from 'requirements.txt'**
-```python
-$  pip3 install -r requirements.txt
+```bash
+pip install -r requirements.txt
 ```
 
-**5. Add the hosts**
+#### 4. Migrate Database
 
-- Got to settings.py file 
-- Then, On allowed hosts, Use **[]** as your host. 
-```python
-ALLOWED_HOSTS = []
-```
-*Do not use the fault allowed settings in this repo. It has security risk!*
-
-
-**6. Now Run Server**
-
-Command for PC:
-```python
-$ python manage.py runserver
+```bash
+python manage.py makemigrations
+python manage.py migrate
 ```
 
-Command for Mac:
-```python
-$ python3 manage.py runserver
+#### 5. Create Superuser (Admin)
+
+```bash
+python manage.py createsuperuser
 ```
 
-Command for Linux:
-```python
-$ python3 manage.py runserver
+#### 6. Run Development Server
+
+```bash
+python manage.py runserver
 ```
 
-**7. Login Credentials**
+Then go to the development server
 
-Create Super User (HOD)
-Command for PC:
-```
-$  python manage.py createsuperuser
-```
+---
 
-Command for Mac:
-```
-$  python3 manage.py createsuperuser
-```
+## 🧪 Default Roles
 
-Command for Linux:
-```
-$  python3 manage.py createsuperuser
-```
+* **Admin** (created via `createsuperuser`)
+* **HRs & Employees** are created from the admin dashboard
 
+---
 
+## 🧩 Functional Modules
 
-## Project's Journey
-- [x] Admin/Staff/Student Login
-- [x] Add and Edit Course
-- [x] Add and Edit Staff
-- [x] Add and Edit Student
-- [x] Add and Edit Subject
-- [x] Upload Staff's Picture
-- [x] Upload Student's Picture
-- [x] Sidebar Active Status
-- [x] Named URLs
-- [x] Model Forms for adding  student
-- [x] Model Forms for all
-- [x] Views Permission (MiddleWareMixin)
-- [x] Attendance and Update Attendance
-- [x] Password Reset Via Email
-- [x] Apply For Leave
-- [x] Students Can Check Attendance
-- [x] Check Email Availability
-- [x] Reply to Leave Applications
-- [x] Reply to Feedback
-- [x] Admin View Attendance
-- [x] Password Change for Admin, Staff and Students using *set_password()*
-- [x] Admin Profile Edit
-- [x] Staff Profile Edit
-- [x] Student Profile Edit
-- [x] Student Dashboard Fixed
-- [x] Passing Page Title From View  - Improved
-- [x] Staff Dashboard Fixed
-- [x] Admin Dashboard Fixed
-- [x] Staff Add Student's Result
-- [x] Staff Edit Result Using CBVs (Class Based Views)
-- [x] Google CAPTCHA
-- [x] Student View Result
-- [x] Change all links to be dynamic
-- [x] Code Restructure - Very Important
+* Admin, HR, Employee Role Management
+* CRUD for HRs, Employees, Designations, Projects
+* Attendance and Leave Management
+* Feedback and Notification System
+* Dynamic Dashboards and Reports
+* Profile Management and Authentication
+* Django Admin Panel Integration
+
+---
+
+## ⭐ Contributing & Support
+
+If you like this project:
+
+1. 🌟 Star this repo
+2. 🤝 Fork & Contribute
+3. 🧑‍💼 Connect with me on [LinkedIn](https://linkedin.com/in/sujaykumarmondal)
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.
+
+---
+
+Let me know if you'd like this `README.md` exported to a file or with additional badges (build status, license, etc).

@@ -63,7 +63,7 @@ class EmployeeForm(CustomUserForm):
     class Meta(CustomUserForm.Meta):
         model = Employee
         fields = CustomUserForm.Meta.fields + \
-            ['course', 'session']
+            ['designation', 'session']
 
 
 class AdminForm(CustomUserForm):
@@ -82,26 +82,26 @@ class HRForm(CustomUserForm):
     class Meta(CustomUserForm.Meta):
         model = HR
         fields = CustomUserForm.Meta.fields + \
-            ['course' ]
+            ['designation' ]
 
 
-class CourseForm(FormSettings):
+class DesignationForm(FormSettings):
     def __init__(self, *args, **kwargs):
-        super(CourseForm, self).__init__(*args, **kwargs)
+        super(DesignationForm, self).__init__(*args, **kwargs)
 
     class Meta:
         fields = ['name']
-        model = Course
+        model = Designation
 
 
-class SubjectForm(FormSettings):
+class ProjectForm(FormSettings):
 
     def __init__(self, *args, **kwargs):
-        super(SubjectForm, self).__init__(*args, **kwargs)
+        super(ProjectForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = Subject
-        fields = ['name', 'hr', 'course']
+        model = Project
+        fields = ['name', 'hr', 'designation']
 
 
 class SessionForm(FormSettings):
@@ -189,7 +189,7 @@ class EditResultForm(FormSettings):
 
     class Meta:
         model = EmployeeResult
-        fields = ['session_year', 'subject', 'employee', 'test', 'exam']
+        fields = ['session_year', 'project', 'employee', 'test', 'exam']
 
 #todos
 # class TodoForm(forms.ModelForm):

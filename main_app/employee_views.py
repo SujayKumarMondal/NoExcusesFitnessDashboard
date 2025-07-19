@@ -16,7 +16,7 @@ from .models import *
 
 def employee_home(request):
     employee = get_object_or_404(Employee, admin=request.user)
-    total_subject = Subject.objects.filter(course=employee.course).count()
+    total_project = Project.objects.filter(designation=employee.designation).count()
     total_attendance = AttendanceReport.objects.filter(employee=employee).count()
     total_present = AttendanceReport.objects.filter(employee=employee, status=True).count()
     if total_attendance == 0:  # Don't divide. DivisionByZero
@@ -24,28 +24,28 @@ def employee_home(request):
     else:
         percent_present = math.floor((total_present/total_attendance) * 100)
         percent_absent = math.ceil(100 - percent_present)
-    subject_name = []
+    project_name = []
     data_present = []
     data_absent = []
-    subjects = Subject.objects.filter(course=employee.course)
-    for subject in subjects:
-        attendance = Attendance.objects.filter(subject=subject)
+    projects = Project.objects.filter(designation=employee.designation)
+    for project in projects:
+        attendance = Attendance.objects.filter(project=project)
         present_count = AttendanceReport.objects.filter(
             attendance__in=attendance, status=True, employee=employee).count()
         absent_count = AttendanceReport.objects.filter(
             attendance__in=attendance, status=False, employee=employee).count()
-        subject_name.append(subject.name)
+        project_name.append(project.name)
         data_present.append(present_count)
         data_absent.append(absent_count)
     context = {
         'total_attendance': total_attendance,
         'percent_present': percent_present,
         'percent_absent': percent_absent,
-        'total_subject': total_subject,
-        'subjects': subjects,
+        'total_project': total_project,
+        'projects': projects,
         'data_present': data_present,
         'data_absent': data_absent,
-        'data_name': subject_name,
+        'data_name': project_name,
         'page_title': '(TeamOps--Employee Panel) - ' + str(employee.admin.first_name) + ' ' + str(employee.admin.last_name)
 
     }
@@ -56,22 +56,22 @@ def employee_home(request):
 def employee_view_attendance(request):
     employee = get_object_or_404(Employee, admin=request.user)
     if request.method != 'POST':
-        course = get_object_or_404(Course, id=employee.course.id)
+        designation = get_object_or_404(Designation, id=employee.designation.id)
         context = {
-            'subjects': Subject.objects.filter(course=course),
+            'projects': Project.objects.filter(designation=designation),
             'page_title': 'View Attendance'
         }
         return render(request, 'employee_template/employee_view_attendance.html', context)
     else:
-        subject_id = request.POST.get('subject')
+        project_id = request.POST.get('project')
         start = request.POST.get('start_date')
         end = request.POST.get('end_date')
         try:
-            subject = get_object_or_404(Subject, id=subject_id)
+            project = get_object_or_404(Project, id=project_id)
             start_date = datetime.strptime(start, "%Y-%m-%d")
             end_date = datetime.strptime(end, "%Y-%m-%d")
             attendance = Attendance.objects.filter(
-                date__range=(start_date, end_date), subject=subject)
+                date__range=(start_date, end_date), project=project)
             attendance_reports = AttendanceReport.objects.filter(
                 attendance__in=attendance, employee=employee)
             json_data = []

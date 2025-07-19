@@ -14,25 +14,25 @@ from datetime import date
 
 def hr_home(request):
     hr = get_object_or_404(HR, admin=request.user)
-    total_employees = Employee.objects.filter(course=hr.course).count()
+    total_employees = Employee.objects.filter(designation=hr.designation).count()
     total_leave = LeaveReportHR.objects.filter(hr=hr).count()
-    subjects = Subject.objects.filter(hr=hr)
-    total_subject = subjects.count()
-    attendance_list = Attendance.objects.filter(subject__in=subjects)
+    projects = Project.objects.filter(hr=hr)
+    total_project = projects.count()
+    attendance_list = Attendance.objects.filter(project__in=projects)
     total_attendance = attendance_list.count()
     attendance_list = []
-    subject_list = []
-    for subject in subjects:
-        attendance_count = Attendance.objects.filter(subject=subject).count()
-        subject_list.append(subject.name)
+    project_list = []
+    for project in projects:
+        attendance_count = Attendance.objects.filter(project=project).count()
+        project_list.append(project.name)
         attendance_list.append(attendance_count)
     context = {
-        'page_title': 'TeamOps(HR Panel) - ' + str(hr.admin.first_name) + ' ' + str(hr.admin.last_name) + '' + ' (' + str(hr.course) + ')',
+        'page_title': 'TeamOps(HR Panel) - ' + str(hr.admin.first_name) + ' ' + str(hr.admin.last_name) + '' + ' (' + str(hr.designation) + ')',
         'total_employees': total_employees,
         'total_attendance': total_attendance,
         'total_leave': total_leave,
-        'total_subject': total_subject,
-        'subject_list': subject_list,
+        'total_project': total_project,
+        'project_list': project_list,
         'attendance_list': attendance_list
     }
     return render(request, 'hr_template/home_content.html', context)
@@ -40,10 +40,10 @@ def hr_home(request):
 
 def hr_take_attendance(request):
     hr = get_object_or_404(HR, admin=request.user)
-    subjects = Subject.objects.filter(hr_id=hr)
+    projects = Project.objects.filter(hr_id=hr)
     sessions = Session.objects.all()
     context = {
-        'subjects': subjects,
+        'projects': projects,
         'sessions': sessions,
         'page_title': 'Take Attendance'
     }
@@ -53,13 +53,13 @@ def hr_take_attendance(request):
 
 @csrf_exempt
 def get_employees(request):
-    subject_id = request.POST.get('subject')
+    project_id = request.POST.get('project')
     session_id = request.POST.get('session')
     try:
-        subject = get_object_or_404(Subject, id=subject_id)
+        project = get_object_or_404(Project, id=project_id)
         session = get_object_or_404(Session, id=session_id)
         employees = Employee.objects.filter(
-            course_id=subject.course.id, session=session)
+            designation_id=project.designation.id, session=session)
         employee_data = []
         for employee in employees:
             data = {
@@ -76,13 +76,13 @@ def get_employees(request):
 def save_attendance(request):
     employee_data = request.POST.get('employee_ids')
     date = request.POST.get('date')
-    subject_id = request.POST.get('subject')
+    project_id = request.POST.get('project')
     session_id = request.POST.get('session')
     employees = json.loads(employee_data)
     try:
         session = get_object_or_404(Session, id=session_id)
-        subject = get_object_or_404(Subject, id=subject_id)
-        attendance = Attendance(session=session, subject=subject, date=date)
+        project = get_object_or_404(Project, id=project_id)
+        attendance = Attendance(session=session, project=project, date=date)
         attendance.save()
 
         for employee_dict in employees:
@@ -97,10 +97,10 @@ def save_attendance(request):
 
 def hr_update_attendance(request):
     hr = get_object_or_404(HR, admin=request.user)
-    subjects = Subject.objects.filter(hr_id=hr)
+    projects = Project.objects.filter(hr_id=hr)
     sessions = Session.objects.all()
     context = {
-        'subjects': subjects,
+        'projects': projects,
         'sessions': sessions,
         'page_title': 'Update Attendance'
     }
@@ -256,30 +256,30 @@ def hr_view_notification(request):
 
 def hr_add_result(request):
     hr = get_object_or_404(HR, admin=request.user)
-    subjects = Subject.objects.filter(hr=hr)
+    projects = Project.objects.filter(hr=hr)
     sessions = Session.objects.all()
     context = {
         'page_title': 'Result Upload',
-        'subjects': subjects,
+        'projects': projects,
         'sessions': sessions
     }
     if request.method == 'POST':
         try:
             employee_id = request.POST.get('employee_list')
-            subject_id = request.POST.get('subject')
+            project_id = request.POST.get('project')
             test = request.POST.get('test')
             exam = request.POST.get('exam')
             employee = get_object_or_404(Employee, id=employee_id)
-            subject = get_object_or_404(Subject, id=subject_id)
+            project = get_object_or_404(Project, id=project_id)
             try:
                 data = EmployeeResult.objects.get(
-                    employee=employee, subject=subject)
+                    employee=employee, project=project)
                 data.exam = exam
                 data.test = test
                 data.save()
                 messages.success(request, "Scores Updated")
             except:
-                result = EmployeeResult(employee=employee, subject=subject, test=test, exam=exam)
+                result = EmployeeResult(employee=employee, project=project, test=test, exam=exam)
                 result.save()
                 messages.success(request, "Scores Saved")
         except Exception as e:
@@ -290,11 +290,11 @@ def hr_add_result(request):
 @csrf_exempt
 def fetch_employee_result(request):
     try:
-        subject_id = request.POST.get('subject')
+        project_id = request.POST.get('project')
         employee_id = request.POST.get('employee')
         employee = get_object_or_404(Employee, id=employee_id)
-        subject = get_object_or_404(Subject, id=subject_id)
-        result = EmployeeResult.objects.get(employee=employee, subject=subject)
+        project = get_object_or_404(Project, id=project_id)
+        result = EmployeeResult.objects.get(employee=employee, project=project)
         result_data = {
             'exam': result.exam,
             'test': result.test

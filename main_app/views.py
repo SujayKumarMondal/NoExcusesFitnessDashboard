@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from .EmailBackend import EmailBackend
-from .models import Attendance, Session, Subject 
+from .models import Attendance, Session, Project 
 
 # Create your views here.
 
@@ -92,12 +92,12 @@ def logout_user(request):
 
 @csrf_exempt
 def get_attendance(request):
-    subject_id = request.POST.get('subject')
+    project_id = request.POST.get('project')
     session_id = request.POST.get('session')
     try:
-        subject = get_object_or_404(Subject, id=subject_id)
+        project = get_object_or_404(Project, id=project_id)
         session = get_object_or_404(Session, id=session_id)
-        attendance = Attendance.objects.filter(subject=subject, session=session)
+        attendance = Attendance.objects.filter(project=project, session=session)
         attendance_list = []
         for attd in attendance:
             data = {
