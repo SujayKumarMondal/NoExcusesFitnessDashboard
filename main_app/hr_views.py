@@ -64,7 +64,7 @@ def get_employees(request):
         for employee in employees:
             data = {
                     "id": employee.id,
-                    "name": employee.admin.last_name + " " + employee.admin.first_name
+                    "name": employee.admin.first_name + " " + employee.admin.last_name
                     }
             employee_data.append(data)
         return JsonResponse(json.dumps(employee_data), content_type='application/json', safe=False)
@@ -254,103 +254,103 @@ def hr_view_notification(request):
     return render(request, "hr_template/hr_view_notification.html", context)
 
 
-def hr_add_result(request):
-    hr = get_object_or_404(HR, admin=request.user)
-    projects = Project.objects.filter(hr=hr)
-    sessions = Session.objects.all()
-    context = {
-        'page_title': 'Result Upload',
-        'projects': projects,
-        'sessions': sessions
-    }
-    if request.method == 'POST':
-        try:
-            employee_id = request.POST.get('employee_list')
-            project_id = request.POST.get('project')
-            test = request.POST.get('test')
-            exam = request.POST.get('exam')
-            employee = get_object_or_404(Employee, id=employee_id)
-            project = get_object_or_404(Project, id=project_id)
-            try:
-                data = EmployeeResult.objects.get(
-                    employee=employee, project=project)
-                data.exam = exam
-                data.test = test
-                data.save()
-                messages.success(request, "Scores Updated")
-            except:
-                result = EmployeeResult(employee=employee, project=project, test=test, exam=exam)
-                result.save()
-                messages.success(request, "Scores Saved")
-        except Exception as e:
-            messages.warning(request, "Error Occured While Processing Form")
-    return render(request, "hr_template/hr_add_result.html", context)
+# def hr_add_result(request):
+#     hr = get_object_or_404(HR, admin=request.user)
+#     projects = Project.objects.filter(hr=hr)
+#     sessions = Session.objects.all()
+#     context = {
+#         'page_title': 'Result Upload',
+#         'projects': projects,
+#         'sessions': sessions
+#     }
+#     if request.method == 'POST':
+#         try:
+#             employee_id = request.POST.get('employee_list')
+#             project_id = request.POST.get('project')
+#             test = request.POST.get('test')
+#             exam = request.POST.get('exam')
+#             employee = get_object_or_404(Employee, id=employee_id)
+#             project = get_object_or_404(Project, id=project_id)
+#             try:
+#                 data = EmployeeResult.objects.get(
+#                     employee=employee, project=project)
+#                 data.exam = exam
+#                 data.test = test
+#                 data.save()
+#                 messages.success(request, "Scores Updated")
+#             except:
+#                 result = EmployeeResult(employee=employee, project=project, test=test, exam=exam)
+#                 result.save()
+#                 messages.success(request, "Scores Saved")
+#         except Exception as e:
+#             messages.warning(request, "Error Occured While Processing Form")
+#     return render(request, "hr_template/hr_add_result.html", context)
 
 
-@csrf_exempt
-def fetch_employee_result(request):
-    try:
-        project_id = request.POST.get('project')
-        employee_id = request.POST.get('employee')
-        employee = get_object_or_404(Employee, id=employee_id)
-        project = get_object_or_404(Project, id=project_id)
-        result = EmployeeResult.objects.get(employee=employee, project=project)
-        result_data = {
-            'exam': result.exam,
-            'test': result.test
-        }
-        return HttpResponse(json.dumps(result_data))
-    except Exception as e:
-        return HttpResponse('False')
+# @csrf_exempt
+# def fetch_employee_result(request):
+#     try:
+#         project_id = request.POST.get('project')
+#         employee_id = request.POST.get('employee')
+#         employee = get_object_or_404(Employee, id=employee_id)
+#         project = get_object_or_404(Project, id=project_id)
+#         result = EmployeeResult.objects.get(employee=employee, project=project)
+#         result_data = {
+#             'exam': result.exam,
+#             'test': result.test
+#         }
+#         return HttpResponse(json.dumps(result_data))
+#     except Exception as e:
+#         return HttpResponse('False')
 
-#library
-def add_book(request):
+#store
+def add_asset(request):
     if request.method == "POST":
         name = request.POST['name']
-        author = request.POST['author']
+        brand = request.POST['brand']
         isbn = request.POST['isbn']
         category = request.POST['category']
 
 
-        books = Book.objects.create(name=name, author=author, isbn=isbn, category=category )
-        books.save()
+        assets = Asset.objects.create(name=name, brand=brand, isbn=isbn, category=category )
+        assets.save()
         alert = True
-        return render(request, "hr_template/add_book.html", {'alert':alert})
+        return render(request, "hr_template/add_asset.html", {'alert':alert})
     context = {
-        'page_title': "Add Book"
+        'page_title': "Add Asset"
     }
-    return render(request, "hr_template/add_book.html",context)
+    return render(request, "hr_template/add_asset.html",context)
 
-#issue book
+#issue asset
 
 
-def issue_book(request):
-    form = forms.IssueBookForm()
+def issue_asset(request):
+    form = forms.IssueAssetForm()
     if request.method == "POST":
-        form = forms.IssueBookForm(request.POST)
+        form = forms.IssueAssetForm(request.POST)
         if form.is_valid():
-            obj = models.IssuedBook()
+            obj = models.IssuedAsset()
             obj.employee_id = request.POST['name2']
             obj.isbn = request.POST['isbn2']
             obj.save()
             alert = True
-            return render(request, "hr_template/issue_book.html", {'obj':obj, 'alert':alert})
-    return render(request, "hr_template/issue_book.html", {'form':form})
+            return render(request, "hr_template/issue_asset.html", {'obj':obj, 'alert':alert})
+    return render(request, "hr_template/issue_asset.html", {'form':form})
 
-def view_issued_book(request):
-    issuedBooks = IssuedBook.objects.all()
+def view_issued_asset(request):
+    issuedAssets = IssuedAsset.objects.all()
     details = []
-    for i in issuedBooks:
+    for i in issuedAssets:
         days = (date.today()-i.issued_date)
         d=days.days
         fine=0
         if d>14:
             day=d-14
             fine=day*5
-        books = list(models.Book.objects.filter(isbn=i.isbn))
+        assets = list(models.Asset.objects.filter(isbn=i.isbn))
         i=0
-        for l in books:
-            t=(books[i].name,books[i].isbn,issuedBooks[0].issued_date,issuedBooks[0].expiry_date,fine)
+        for l in assets:
+            t=(assets[i].name,assets[i].isbn,issuedAssets[0].issued_date,issuedAssets[0].expiry_date,fine)
             i=i+1
             details.append(t)
-    return render(request, "hr_template/view_issued_book.html", {'issuedBooks':issuedBooks, 'details':details})
+    return render(request, "hr_template/view_issued_asset.html", {'issuedAssets':issuedAssets, 'details':details})

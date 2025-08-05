@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 
-from main_app.EditResultView import EditResultView
+# from main_app.EditResultView import EditResultView
 
 from . import admin_views, hr_views, employee_views, views
 
@@ -96,9 +96,9 @@ urlpatterns = [
     path("hr/attendance/update/", hr_views.hr_update_attendance,
          name='hr_update_attendance'),
     path("hr/get_employees/", hr_views.get_employees, name='get_employees'),
-     path("hr/addbook/", hr_views.add_book, name="add_book"),
-    path("hr/issue_book/", hr_views.issue_book, name="issue_book"),
-    path("hr/view_issued_book/", hr_views.view_issued_book, name="view_issued_book"),
+     path("hr/addasset/", hr_views.add_asset, name="add_asset"),
+    path("hr/issue_asset/", hr_views.issue_asset, name="issue_asset"),
+    path("hr/view_issued_asset/", hr_views.view_issued_asset, name="view_issued_asset"),
 
 
 
@@ -111,11 +111,11 @@ urlpatterns = [
     path("hr/fcmtoken/", hr_views.hr_fcmtoken, name='hr_fcmtoken'),
     path("hr/view/notification/", hr_views.hr_view_notification,
          name="hr_view_notification"),
-    path("hr/result/add/", hr_views.hr_add_result, name='hr_add_result'),
-    path("hr/result/edit/", EditResultView.as_view(),
-         name='edit_employee_result'),
-    path('hr/result/fetch/', hr_views.fetch_employee_result,
-         name='fetch_employee_result'),
+#     path("hr/result/add/", hr_views.hr_add_result, name='hr_add_result'),
+#     path("hr/result/edit/", EditResultView.as_view(),
+#          name='edit_employee_result'),
+#     path('hr/result/fetch/', hr_views.fetch_employee_result,
+#          name='fetch_employee_result'),
 
 
 
@@ -134,11 +134,11 @@ urlpatterns = [
      # path('employee/todo',employee_views.todo,name='todo'),
 
      
-     path("employee/viewbooks/", employee_views.view_books, name="view_books"),
+     path("employee/viewassets/", employee_views.view_assets, name="view_assets"),
 
     path("employee/view/notification/", employee_views.employee_view_notification,
          name="employee_view_notification"),
-    path('employee/view/result/', employee_views.employee_view_result,
-         name='employee_view_result'),
+#     path('employee/view/result/', employee_views.employee_view_result,
+#          name='employee_view_result'),
 
 ]

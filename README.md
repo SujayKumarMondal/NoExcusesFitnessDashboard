@@ -45,7 +45,7 @@ A comprehensive web-based Office Management System built with **Django**. It inc
 2. Apply for Leave
 3. Send Feedback to HR/Admin
 4. Receive Notifications
-5. View Book Issues
+5. View Asset Issues
 6. Edit Employee Profile
 
 ---

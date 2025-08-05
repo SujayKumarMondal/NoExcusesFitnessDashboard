@@ -74,9 +74,9 @@ class Designation(models.Model):
     def __str__(self):
         return self.name
 
-class Book(models.Model):
+class Asset(models.Model):
     name = models.CharField(max_length=200)
-    author = models.CharField(max_length=200)
+    brand = models.CharField(max_length=200)
     isbn = models.PositiveIntegerField()
     category = models.CharField(max_length=50)
 
@@ -92,15 +92,15 @@ class Employee(models.Model):
     def __str__(self):
         return self.admin.last_name + ", " + self.admin.first_name
 
-class Library(models.Model):
+class Store(models.Model):
     employee = models.ForeignKey(Employee,  on_delete=models.CASCADE, null=True, blank=False)
-    book = models.ForeignKey(Book,  on_delete=models.CASCADE, null=True, blank=False)
+    asset = models.ForeignKey(Asset,  on_delete=models.CASCADE, null=True, blank=False)
     def __str__(self):
         return str(self.employee)
 
 def expiry():
     return datetime.today() + timedelta(days=14)
-class IssuedBook(models.Model):
+class IssuedAsset(models.Model):
     employee_id = models.CharField(max_length=100, blank=True) 
     isbn = models.CharField(max_length=13)
     issued_date = models.DateField(auto_now=True)
@@ -191,13 +191,13 @@ class NotificationEmployee(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class EmployeeResult(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=False)
-    test = models.FloatField(default=0)
-    exam = models.FloatField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class EmployeeResult(models.Model):
+#     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=False)
+#     test = models.FloatField(default=0)
+#     exam = models.FloatField(default=0)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
 
 
 @receiver(post_save, sender=CustomUser)

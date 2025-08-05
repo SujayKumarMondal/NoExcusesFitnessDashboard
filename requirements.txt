@@ -8,4 +8,6 @@ Pillow
 requests
 django-core
 mysqlclient
+# psycopg
+psycopg2-binary
 python-dotenv

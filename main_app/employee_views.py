@@ -197,23 +197,23 @@ def employee_view_notification(request):
     return render(request, "employee_template/employee_view_notification.html", context)
 
 
-def employee_view_result(request):
-    employee = get_object_or_404(Employee, admin=request.user)
-    results = EmployeeResult.objects.filter(employee=employee)
+# def employee_view_result(request):
+#     employee = get_object_or_404(Employee, admin=request.user)
+#     results = EmployeeResult.objects.filter(employee=employee)
+#     context = {
+#         'results': results,
+#         'page_title': "View Results"
+#     }
+#     return render(request, "employee_template/employee_view_result.html", context)
+
+
+#store
+
+def view_assets(request):
+    assets = Asset.objects.all()
     context = {
-        'results': results,
-        'page_title': "View Results"
+        'assets': assets,
+        'page_title': "Store"
     }
-    return render(request, "employee_template/employee_view_result.html", context)
-
-
-#library
-
-def view_books(request):
-    books = Book.objects.all()
-    context = {
-        'books': books,
-        'page_title': "Library"
-    }
-    return render(request, "employee_template/view_books.html", context)
+    return render(request, "employee_template/view_assets.html", context)
 

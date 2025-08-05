@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 from dotenv import load_dotenv
 import os
+load_dotenv()
+
 import dj_database_url
 from pathlib import Path
 
@@ -99,10 +101,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'teamops_db',
-        # 'USER': os.environ.get('DB_USER'),
-        'USER': 'sujay',
-        # 'PASSWORD': os.environ.get('DB_PASS'),
-        'PASSWORD': 'Sujay@10',
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
         'HOST': '127.0.0.1',
         'PORT': '3306'
     }

@@ -179,17 +179,17 @@ class HREditForm(CustomUserForm):
         fields = CustomUserForm.Meta.fields
 
 
-class EditResultForm(FormSettings):
-    session_list = Session.objects.all()
-    session_year = forms.ModelChoiceField(
-        label="Session Year", queryset=session_list, required=True)
+# class EditResultForm(FormSettings):
+#     session_list = Session.objects.all()
+#     session_year = forms.ModelChoiceField(
+#         label="Session Year", queryset=session_list, required=True)
 
-    def __init__(self, *args, **kwargs):
-        super(EditResultForm, self).__init__(*args, **kwargs)
+#     def __init__(self, *args, **kwargs):
+#         super(EditResultForm, self).__init__(*args, **kwargs)
 
-    class Meta:
-        model = EmployeeResult
-        fields = ['session_year', 'project', 'employee', 'test', 'exam']
+    # class Meta:
+    #     model = EmployeeResult
+    #     fields = ['session_year', 'project', 'employee', 'test', 'exam']
 
 #todos
 # class TodoForm(forms.ModelForm):
@@ -197,10 +197,10 @@ class EditResultForm(FormSettings):
 #         model=Todo
 #         fields=["title","is_finished"]
 
-#issue book
+#issue asset
 
-class IssueBookForm(forms.Form):
-    isbn2 = forms.ModelChoiceField(queryset=models.Book.objects.all(), empty_label="Book Name [ISBN]", to_field_name="isbn", label="Book (Name and ISBN)")
+class IssueAssetForm(forms.Form):
+    isbn2 = forms.ModelChoiceField(queryset=models.Asset.objects.all(), empty_label="Asset Name [ISBN]", to_field_name="isbn", label="Asset (Name and ISBN)")
     name2 = forms.ModelChoiceField(queryset=models.Employee.objects.all(), empty_label="Name ", to_field_name="", label="Employee Details")
     
     isbn2.widget.attrs.update({'class': 'form-control'})
