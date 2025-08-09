@@ -94,19 +94,16 @@ WSGI_APPLICATION = 'teamOps.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'teamops_db',
+        'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASS'),
-        'HOST': '127.0.0.1',
-        'PORT': '3306'
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
+
 
 
 # Password validation
@@ -176,7 +173,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('thisissujay12@gmail.com') 
 EMAIL_HOST_PASSWORD = os.environ.get('ywqvgtzyjqpjbrcn')
 EMAIL_USE_TLS = True
-# DEFAULT_FROM_EMAIL = "School Management System <admin@admin.com>"
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
